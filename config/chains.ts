@@ -3,6 +3,7 @@ import { Chain } from './types'
 
 export const polygon: Chain = {
   id: 137,
+  abstractId: 109,
   name: 'Polygon',
   network: 'matic',
   accounts: evmAccounts,
@@ -35,12 +36,16 @@ export const polygon: Chain = {
     multicall3: {
       address: '0xca11bde05977b3631167028862be2a173976ca11',
       blockCreated: 25770160
+    },
+    lzEndpoint: {
+      address: '0x3c2269811836af69497E5F486A85D7316753cf62'
     }
   }
 }
 
 export const ethereum: Chain = {
   id: 1,
+  abstractId: 101,
   network: 'homestead',
   name: 'Ethereum',
   accounts: evmAccounts,
@@ -73,12 +78,16 @@ export const ethereum: Chain = {
     multicall3: {
       address: '0xca11bde05977b3631167028862be2a173976ca11',
       blockCreated: 14353601
+    },
+    lzEndpoint: {
+      address: '0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675'
     }
   }
 }
 
 export const sepolia: Chain = {
   id: 11_155_111,
+  abstractId: 10161,
   accounts: evmAccounts,
   network: 'sepolia',
   name: 'Sepolia',
@@ -111,6 +120,9 @@ export const sepolia: Chain = {
     multicall3: {
       address: '0xca11bde05977b3631167028862be2a173976ca11',
       blockCreated: 751532
+    },
+    lzEndpoint: {
+      address: '0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1'
     }
   },
   testnet: true
@@ -118,6 +130,7 @@ export const sepolia: Chain = {
 
 export const polygonMumbai: Chain = {
   id: 80_001,
+  abstractId: 10109,
   name: 'Polygon Mumbai',
   network: 'maticmum',
   accounts: evmAccounts,
@@ -147,6 +160,9 @@ export const polygonMumbai: Chain = {
     multicall3: {
       address: '0xca11bde05977b3631167028862be2a173976ca11',
       blockCreated: 25770160
+    },
+    lzEndpoint: {
+      address: '0xf69186dfBa60DdB133E91E9A4B5673624293d8F8'
     }
   },
   testnet: true

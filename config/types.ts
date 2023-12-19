@@ -6,6 +6,7 @@ export interface NativeCurrency {
 
 export interface Chain {
   id: number
+  abstractId: number
   gasPrice?: number
   name: string
   network: string
