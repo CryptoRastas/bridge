@@ -56,7 +56,7 @@ task('deploy-proxy-ONFT721', 'deploy Proxy ONFT721 contract')
          */
 
         console.log(
-          `ℹ️  Deploying ProxyONFT721 contract to chainId ${chainConfig.id}`
+          `ℹ️  Deploying ProxyONFT721 contract to chain ${chainConfig.name}`
         )
 
         const proxyONFT721 = await hre.ethers.deployContract(

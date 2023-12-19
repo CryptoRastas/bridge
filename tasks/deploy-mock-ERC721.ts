@@ -53,7 +53,7 @@ task('deploy-mock-ERC721', 'deploy MockERC721 contract')
         const tokenId = 1
 
         console.log(
-          `ℹ️ Deployng new MockERC721 ${tokenName} with symbol ${tokenSymbol} to ${chainConfig.id}`
+          `ℹ️ Deployng MockERC721 contract as ${tokenName} and symbol ${tokenSymbol} on ${chainConfig.name}`
         )
 
         const ERC721 = await hre.ethers.deployContract(

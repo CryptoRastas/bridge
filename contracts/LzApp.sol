@@ -6,6 +6,7 @@ import "./interfaces/ILayerZeroReceiver.sol";
 import "./interfaces/ILayerZeroUserApplicationConfig.sol";
 import "./interfaces/ILayerZeroEndpoint.sol";
 import "./libraries/BytesLib.sol";
+import "hardhat/console.sol";
 
 /*
  * a generic LzReceiver implementation

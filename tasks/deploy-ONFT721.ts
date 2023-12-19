@@ -59,7 +59,7 @@ task('deploy-ONFT721', 'deploy ONFT721 contract')
          */
 
         console.log(
-          `ℹ️  Deploying ONFT721 contract to chainId ${chainConfig.id}`
+          `ℹ️  Deploying ONFT721 contract to chain ${chainConfig.name}`
         )
 
         const ONFT721 = await hre.ethers.deployContract(
