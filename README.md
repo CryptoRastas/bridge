@@ -41,6 +41,12 @@ pnpm hardhat deploy-ONFT721 --network 80001 --name OMNICHAIN --symbol OMNI
 pnpm hardhat deploy-mock-ERC721 --network 80001 --token-name OMNICHAIN --token-symbol OMNI
 ```
 
+## Set trusted remote
+
+```bash
+pnpm hardhat set-trusted-remote-address --network 80001 --core-contract-address 0x28F15dF999bA0B9Cc4B363a43e70f107Ac12fef8 --destination-chain-id 11155111 --destination-core-contract-address 0x2C1e21882E18f86e1512F126d07B21FA9d6B117E
+```
+
 ## Verify contracts
 
 pnpm verify --network [networkid] --contract contracts/[ContractName].sol:[Contract] [contractAddress] [arguments]

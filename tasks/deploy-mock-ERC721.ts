@@ -48,10 +48,6 @@ task('deploy-mock-ERC721', 'deploy MockERC721 contract')
          * deployng contract
          */
 
-        const [receiver] = await hre.ethers.getSigners()
-
-        const tokenId = 1
-
         console.log(
           `ℹ️ Deployng MockERC721 contract as ${tokenName} and symbol ${tokenSymbol} on ${chainConfig.name}`
         )
@@ -74,6 +70,9 @@ task('deploy-mock-ERC721', 'deploy MockERC721 contract')
          * Minting token id
          */
 
+        const [receiver] = await hre.ethers.getSigners()
+        const tokenId = 1
+
         spinner.start()
         console.log('ℹ️ Minting: ', tokenId)
 
@@ -84,11 +83,7 @@ task('deploy-mock-ERC721', 'deploy MockERC721 contract')
         spinner.stop()
         console.log('ℹ️ Done and gas used: ', gasUsed2)
 
-        /**
-         * getting address
-         */
-
-        console.log(`✅ Deployed MockERC721 ${tokenName} at: `, ERC721Address)
+        console.log(`✅ Deployed MockERC721 ${tokenName} at ${ERC721Address}`)
       } catch (error) {
         spinner.stop()
         console.log(`❌ ERC721 ${tokenName} deploy failed`)

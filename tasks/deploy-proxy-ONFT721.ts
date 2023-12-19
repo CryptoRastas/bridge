@@ -82,11 +82,12 @@ task('deploy-proxy-ONFT721', 'deploy Proxy ONFT721 contract')
          */
 
         spinner.start()
+        console.log(`ℹ️  Checking deployed contract`)
 
         const proxyONFT721Address = await proxyONFT721.getAddress()
 
         spinner.stop()
-        console.log(`✅ ProxyONFT721 deployed at:`, proxyONFT721Address)
+        console.log(`✅ ProxyONFT721 deployed at ${proxyONFT721Address}`)
       } catch (error) {
         spinner.stop()
         console.log(`❌ ProxyONFT721 deploy failed`)

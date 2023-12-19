@@ -86,11 +86,12 @@ task('deploy-ONFT721', 'deploy ONFT721 contract')
          */
 
         spinner.start()
+        console.log(`ℹ️  Checking deployed contract`)
 
         const ONFT721Address = await ONFT721.getAddress()
 
         spinner.stop()
-        console.log(`✅ ONFT721 deployed at:`, ONFT721Address)
+        console.log(`✅ ONFT721 deployed at ${ONFT721Address}`)
       } catch (error) {
         spinner.stop()
         console.log(`❌ ONFT721 deploy failed`)
