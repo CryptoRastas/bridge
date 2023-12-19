@@ -91,6 +91,7 @@ task('set-trusted-remote-address', 'set trusted remote address')
          */
 
         spinner.start()
+        console.log(`ℹ️ Checking trusted remote is set`)
 
         const trustedRemoteId = await ONFT721Core.trustedRemoteLookup(
           destinationChainConfig.abstractId
@@ -103,6 +104,7 @@ task('set-trusted-remote-address', 'set trusted remote address')
 
         if (!isTrusted) throw new Error('Not trusted')
 
+        spinner.stop()
         console.log(`✅ ONFT721Core contract set trusted remote`)
       } catch (error) {
         spinner.stop()
