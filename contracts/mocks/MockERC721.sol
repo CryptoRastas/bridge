@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.21;
 
-import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {ERC721 as OpenzeppelinERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-contract WERC721 is ERC721 {
+contract MockERC721 is OpenzeppelinERC721 {
     mapping(uint256 tokenId => string) private s_tokenURIs;
 
-    constructor(string memory name_, string memory symbol_) ERC721(name_, symbol_) {}
+    constructor(string memory name_, string memory symbol_) OpenzeppelinERC721(name_, symbol_) {}
 
     function mint(address to, uint256 tokenId, string memory uri) public {
         _mint(to, tokenId);

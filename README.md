@@ -29,8 +29,18 @@ pnpm test:coverage
 pnpm hardhat deploy-proxy-ONFT721 --network 80001 --proxy-token 0x8fDdcAE908f834FF2Cb23d5211A42149907Cfd87
 ```
 
+## Deploying ONFT721
+
+```bash
+pnpm hardhat deploy-ONFT721 --network 80001 --name OMNICHAIN --symbol OMNI
+```
+
 ## Deploying WERC721
 
 ```bash
-pnpm hardhat deploy-WERC721 --network 80001 --token-name OMNICHAIN --token-symbol OMNI
+pnpm hardhat deploy-mock-ERC721 --network 80001 --token-name OMNICHAIN --token-symbol OMNI
 ```
+
+## Verify contracts
+
+pnpm verify --network [networkid] --contract contracts/[ContractName].sol:[Contract] [contractAddress] [arguments]
