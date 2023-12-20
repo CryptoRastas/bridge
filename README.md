@@ -51,7 +51,7 @@ pnpm hardhat set-trusted-remote-address --network 80001 --core-contract-address 
 ## Setting Min Destination Gas
 
 ```bash
-
+pnpm hardhat set-min-destination-gas --network 80001 --core-contract-address 0x28F15dF999bA0B9Cc4B363a43e70f107Ac12fef8 --destination-chain-id 11155111
 ```
 
 ## Verify contracts

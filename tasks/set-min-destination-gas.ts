@@ -5,20 +5,19 @@ import { allowedChainsConfig } from '@/config/config'
 
 const spinner: Spinner = new Spinner(cliSpinner.triangle)
 
-export type SetTrustedRemoteAddress = {
+export type SetMinDestinationGasTask = {
   accountIndex?: number
   coreContractAddress: string
+  minDestinationGas?: number
   destinationChainId: number
-  destinationCoreContractAddress: string
+  packetType?: number
 }
 
-task('set-trusted-remote-address', 'set trusted remote address')
+task('set-min-destination-gas', 'set min destination gas')
   .addParam('coreContractAddress', 'Core contract address')
   .addParam('destinationChainId', 'Destination chain id')
-  .addParam(
-    'destinationCoreContractAddress',
-    'Destination core contract address'
-  )
+  .addOptionalParam('packetType', 'Packet type')
+  .addOptionalParam('minDestinationGas', 'Min destination gas')
   .addOptionalParam(
     'accountIndex',
     'Account index to use for deployment',
@@ -28,11 +27,12 @@ task('set-trusted-remote-address', 'set trusted remote address')
   .setAction(
     async (
       {
-        destinationCoreContractAddress,
         accountIndex,
+        minDestinationGas,
         coreContractAddress,
+        packetType,
         destinationChainId
-      }: SetTrustedRemoteAddress,
+      }: SetMinDestinationGasTask,
       hre
     ) => {
       spinner.start()
@@ -56,12 +56,14 @@ task('set-trusted-remote-address', 'set trusted remote address')
           provider
         )
 
+        const _minDestinationGas = minDestinationGas || 260_000n
+
         /**
          * Initial setup
          */
 
         console.log(
-          `ℹ️ Setting trusted remote ${destinationCoreContractAddress} on chain ${chainConfig.name} from chain ${destinationChainConfig.name}`
+          `ℹ️ Setting min destination gas to chain ${destinationChainConfig.name} on chain ${chainConfig.name} `
         )
 
         const ONFT721Core = await hre.ethers.getContractAt(
@@ -70,14 +72,10 @@ task('set-trusted-remote-address', 'set trusted remote address')
           deployer
         )
 
-        const trustedRemote = hre.ethers.solidityPacked(
-          ['address', 'address'],
-          [destinationCoreContractAddress, coreContractAddress]
-        )
-
-        const tx = await ONFT721Core.setTrustedRemoteAddress(
+        const tx = await ONFT721Core.setMinDstGas(
           destinationChainConfig.abstractId,
-          trustedRemote
+          packetType || 1n,
+          _minDestinationGas
         )
 
         const receipt = await tx?.wait(12)
@@ -86,32 +84,12 @@ task('set-trusted-remote-address', 'set trusted remote address')
         spinner.stop()
         console.log('ℹ️ Gas used: ', gasUsed)
 
-        /**
-         * getting trusted result
-         */
-
-        spinner.start()
-        console.log(`ℹ️ Checking trusted remote is set`)
-
-        const trustedRemoteId = await ONFT721Core.trustedRemoteLookup(
-          destinationChainConfig.abstractId
+        console.log(
+          `✅ Min destination gas has been set to ${_minDestinationGas}`
         )
-
-        const isTrusted = await ONFT721Core.isTrustedRemote(
-          destinationChainConfig.abstractId,
-          trustedRemoteId
-        )
-
-        if (!isTrusted) throw new Error('Not trusted')
-
-        spinner.stop()
-        console.log(`✅ ONFT721Core contract set trusted remote`)
       } catch (error) {
         spinner.stop()
-        console.log(
-          `❌ ONFT721Core contract set trusted remote failed: `,
-          error
-        )
+        console.log(`❌ `)
         console.log(error)
       }
     }
