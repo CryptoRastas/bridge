@@ -83,11 +83,6 @@ task(
           deployer
         )
 
-        const trustedRemote = hre.ethers.solidityPacked(
-          ['address', 'address'],
-          [destinationCoreContractAddress, coreContractAddress]
-        )
-
         spinner.stop()
 
         /**
@@ -109,9 +104,14 @@ task(
           [1, minDstGas]
         )
 
+        const toAddress = hre.ethers.solidityPacked(
+          ['address'],
+          [sender.address]
+        )
+
         const [estimate] = await ONFT721Core.estimateSendFee(
           destinationChainConfig.abstractId,
-          trustedRemote,
+          toAddress,
           tokenId,
           false,
           adapterParams
@@ -155,11 +155,6 @@ task(
 
         spinner.start()
         console.log(`ℹ️ Bridging ERC721 to ${destinationChainConfig.name}`)
-
-        const toAddress = hre.ethers.solidityPacked(
-          ['address'],
-          [sender.address]
-        )
 
         const tx2 = await ONFT721Core.sendFrom(
           sender.address,
