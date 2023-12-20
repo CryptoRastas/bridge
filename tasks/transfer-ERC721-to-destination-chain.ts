@@ -11,7 +11,6 @@ export type DeployTemplateTask = {
   tokenAddress: string
   coreContractAddress: string
   destinationChainId: number
-  destinationCoreContractAddress: string
   packetType?: number
 }
 
@@ -23,10 +22,6 @@ task(
   .addParam('tokenId', 'Token id')
   .addParam('coreContractAddress', 'Core contract address')
   .addParam('destinationChainId', 'Destination chain id')
-  .addParam(
-    'destinationCoreContractAddress',
-    'Destination core contract address'
-  )
   .addOptionalParam(
     'accountIndex',
     'Account index to use for deployment',
@@ -40,7 +35,6 @@ task(
         tokenAddress,
         tokenId,
         coreContractAddress,
-        destinationCoreContractAddress,
         destinationChainId,
         packetType
       }: DeployTemplateTask,
@@ -78,7 +72,7 @@ task(
         const [sender] = await hre.ethers.getSigners()
 
         const ONFT721Core = await hre.ethers.getContractAt(
-          'ONFT721Core',
+          'ProxyONFT721',
           coreContractAddress,
           deployer
         )
@@ -111,7 +105,7 @@ task(
 
         const [estimate] = await ONFT721Core.estimateSendFee(
           destinationChainConfig.abstractId,
-          toAddress,
+          sender.address,
           tokenId,
           false,
           adapterParams
@@ -159,7 +153,7 @@ task(
         const tx2 = await ONFT721Core.sendFrom(
           sender.address,
           destinationChainConfig.abstractId,
-          toAddress,
+          sender.address,
           tokenId,
           sender.address,
           hre.ethers.ZeroAddress,
