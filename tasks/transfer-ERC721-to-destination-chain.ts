@@ -72,7 +72,7 @@ task(
         const [sender] = await hre.ethers.getSigners()
 
         const ONFT721Core = await hre.ethers.getContractAt(
-          'ProxyONFT721',
+          'ONFT721Core',
           coreContractAddress,
           deployer
         )
