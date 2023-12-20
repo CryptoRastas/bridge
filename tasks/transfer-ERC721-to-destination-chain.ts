@@ -156,10 +156,15 @@ task(
         spinner.start()
         console.log(`ℹ️ Bridging ERC721 to ${destinationChainConfig.name}`)
 
+        const toAddress = hre.ethers.solidityPacked(
+          ['address'],
+          [sender.address]
+        )
+
         const tx2 = await ONFT721Core.sendFrom(
           sender.address,
           destinationChainConfig.abstractId,
-          trustedRemote,
+          toAddress,
           tokenId,
           sender.address,
           hre.ethers.ZeroAddress,

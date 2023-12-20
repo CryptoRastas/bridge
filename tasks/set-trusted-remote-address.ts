@@ -61,7 +61,7 @@ task('set-trusted-remote-address', 'set trusted remote address')
          */
 
         console.log(
-          `ℹ️ Setting trusted remote ${destinationCoreContractAddress} on chain ${chainConfig.name} from chain ${destinationChainConfig.name}`
+          `ℹ️ Setting trusted remote ${destinationCoreContractAddress} on chain ${chainConfig.name} to chain ${destinationChainConfig.name}`
         )
 
         const ONFT721Core = await hre.ethers.getContractAt(
