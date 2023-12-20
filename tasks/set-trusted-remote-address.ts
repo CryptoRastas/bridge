@@ -108,10 +108,7 @@ task('set-trusted-remote-address', 'set trusted remote address')
         console.log(`✅ ONFT721Core contract set trusted remote`)
       } catch (error) {
         spinner.stop()
-        console.log(
-          `❌ ONFT721Core contract set trusted remote failed: `,
-          error
-        )
+        console.log(`❌ ONFT721Core contract set trusted remote failed`)
         console.log(error)
       }
     }

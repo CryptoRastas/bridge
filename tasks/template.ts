@@ -6,7 +6,7 @@ import { allowedChainsConfig } from '@/config/config'
 const spinner: Spinner = new Spinner(cliSpinner.triangle)
 
 export type DeployTemplateTask = {
-  accountIndex: number
+  accountIndex?: number
 }
 
 task('deploy-template-task', 'override this template with your task')
@@ -32,7 +32,7 @@ task('deploy-template-task', 'override this template with your task')
       )
 
       const deployer = new hre.ethers.Wallet(
-        chainConfig.accounts[accountIndex],
+        chainConfig.accounts[accountIndex || 0],
         provider
       )
 

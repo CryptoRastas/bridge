@@ -63,7 +63,7 @@ task('set-min-destination-gas', 'set min destination gas')
          */
 
         console.log(
-          `ℹ️ Setting min destination gas to chain ${destinationChainConfig.name} on chain ${chainConfig.name} `
+          `ℹ️ Setting min destination gas to chain ${destinationChainConfig.name} from chain ${chainConfig.name} `
         )
 
         const ONFT721Core = await hre.ethers.getContractAt(
@@ -89,7 +89,7 @@ task('set-min-destination-gas', 'set min destination gas')
         )
       } catch (error) {
         spinner.stop()
-        console.log(`❌ `)
+        console.log(`❌ Min destination gas has not been set`)
         console.log(error)
       }
     }

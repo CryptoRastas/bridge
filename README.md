@@ -41,7 +41,7 @@ pnpm hardhat deploy-proxy-ONFT721 --network 80001 --proxy-token 0x8fDdcAE908f834
 and deploy ONFT721 on destination chain:
 
 ```bash
-pnpm hardhat deploy-ONFT721 --network 80001 --name OMNICHAIN --symbol OMNI
+pnpm hardhat deploy-ONFT721 --network 11155111 --name OMNICHAIN --symbol OMNI
 ```
 
 ## Step 2 - Setting up the bridge
@@ -77,5 +77,5 @@ pnpm hardhat deploy-mock-ERC721 --network 80001 --token-name OMNICHAIN --token-s
 ### Transfer ERC721 to destination chain
 
 ```bash
-@todo
+pnpm hardhat transfer-ERC721-to-destination-chain --network 80001 --core-contract-address 0x28F15dF999bA0B9Cc4B363a43e70f107Ac12fef8 --destination-chain-id 11155111 --destination-core-contract-address 0x2C1e21882E18f86e1512F126d07B21FA9d6B117E --token-address 0x8fddcae908f834ff2cb23d5211a42149907cfd87 --token-id 1
 ```

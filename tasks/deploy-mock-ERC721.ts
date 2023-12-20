@@ -6,7 +6,7 @@ import { allowedChainsConfig } from '@/config/config'
 const spinner: Spinner = new Spinner(cliSpinner.triangle)
 
 export type DeployMockERC721Task = {
-  accountIndex: number
+  accountIndex?: number
   tokenName: string
   tokenSymbol: string
 }
@@ -40,7 +40,7 @@ task('deploy-mock-ERC721', 'deploy MockERC721 contract')
         )
 
         const deployer = new hre.ethers.Wallet(
-          chainConfig.accounts[accountIndex],
+          chainConfig.accounts[accountIndex || 0],
           provider
         )
 
@@ -86,7 +86,7 @@ task('deploy-mock-ERC721', 'deploy MockERC721 contract')
         console.log(`✅ Deployed MockERC721 ${tokenName} at ${ERC721Address}`)
       } catch (error) {
         spinner.stop()
-        console.log(`❌ ERC721 ${tokenName} deploy failed`)
+        console.log(`❌ ERC721 ${tokenName} deploy has been failed`)
         console.log(error)
       }
     }

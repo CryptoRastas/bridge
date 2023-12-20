@@ -94,7 +94,7 @@ task('deploy-ONFT721', 'deploy ONFT721 contract')
         console.log(`✅ ONFT721 deployed at ${ONFT721Address}`)
       } catch (error) {
         spinner.stop()
-        console.log(`❌ ONFT721 deploy failed`)
+        console.log(`❌ ONFT721 deploy has been failed`)
         console.log(error)
       }
     }
