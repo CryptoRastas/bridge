@@ -62,13 +62,13 @@ pnpm hardhat set-trusted-remote-address --network 11155111 --core-contract-addre
 
 ### Setting min gas required
 
-Set destination chain min gas required to perform actions on source chain:
+Set destination chain min gas required to perform actions on chain:
 
 ```bash
 pnpm hardhat set-min-destination-gas --network 80001 --core-contract-address 0x2c1Af868C8153E47Ba44F889A610b205c5872935 --destination-chain-id 11155111
 ```
 
-repeat the process on the destination chain, to set min gas required to perform actions on source chain:
+repeat the process on the destination chain, to set min gas required to perform actions on chain:
 
 ```bash
 pnpm hardhat set-min-destination-gas --network 11155111 --core-contract-address 0x5a81cF53F84957bC83D1cdBF13878FA33ea75Ab1 --destination-chain-id 80001
