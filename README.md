@@ -35,7 +35,7 @@ pnpm test:coverage
 Deploy ProxyONFT721 on source chain:
 
 ```bash
-pnpm hardhat deploy-proxy-ONFT721 --network 80001 --proxy-token 0xFB6F96b38AEaA0489FC0eEee8B105484f2111d99
+pnpm hardhat deploy-proxy-ONFT721 --network 80001 --proxy-token 0x5a6609233B85e2465B8D9FFe622C941077AaDbAF
 ```
 
 and deploy ONFT721 on destination chain:
@@ -51,13 +51,13 @@ pnpm hardhat deploy-ONFT721 --network 11155111 --name OMNICHAIN --symbol OMNI
 Set destination chain as trusted remote address on source chain:
 
 ```bash
-pnpm hardhat set-trusted-remote-address --network 80001 --core-contract-address 0x2c1Af868C8153E47Ba44F889A610b205c5872935 --destination-chain-id 11155111 --destination-core-contract-address 0x5a81cF53F84957bC83D1cdBF13878FA33ea75Ab1
+pnpm hardhat set-trusted-remote-address --network 80001 --core-contract-address 0x8911E121D2008533B25D3901E610F76378339769 --destination-chain-id 11155111 --destination-core-contract-address 0x8903a712409411Ce29B72b5a2bCE363F1C716639
 ```
 
 repeat the process on the destination chain, to trust the source chain:
 
 ```bash
-pnpm hardhat set-trusted-remote-address --network 11155111 --core-contract-address 0x5a81cF53F84957bC83D1cdBF13878FA33ea75Ab1 --destination-chain-id 80001 --destination-core-contract-address 0x2c1Af868C8153E47Ba44F889A610b205c5872935
+pnpm hardhat set-trusted-remote-address --network 11155111 --core-contract-address 0x8903a712409411Ce29B72b5a2bCE363F1C716639 --destination-chain-id 80001 --destination-core-contract-address 0x8911E121D2008533B25D3901E610F76378339769
 ```
 
 ### Setting min gas required
@@ -65,13 +65,13 @@ pnpm hardhat set-trusted-remote-address --network 11155111 --core-contract-addre
 Set destination chain min gas required to perform actions on chain:
 
 ```bash
-pnpm hardhat set-min-destination-gas --network 80001 --core-contract-address 0x2c1Af868C8153E47Ba44F889A610b205c5872935 --destination-chain-id 11155111
+pnpm hardhat set-min-destination-gas --network 80001 --core-contract-address 0x8911E121D2008533B25D3901E610F76378339769 --destination-chain-id 11155111
 ```
 
 repeat the process on the destination chain, to set min gas required to perform actions on chain:
 
 ```bash
-pnpm hardhat set-min-destination-gas --network 11155111 --core-contract-address 0x5a81cF53F84957bC83D1cdBF13878FA33ea75Ab1 --destination-chain-id 80001
+pnpm hardhat set-min-destination-gas --network 11155111 --core-contract-address 0x8903a712409411Ce29B72b5a2bCE363F1C716639 --destination-chain-id 80001
 ```
 
 ## Step 3 - Transfer ERC721
@@ -79,7 +79,7 @@ pnpm hardhat set-min-destination-gas --network 11155111 --core-contract-address 
 Transfer ERC721 to destination chain
 
 ```bash
-pnpm hardhat transfer-ERC721-to-destination-chain --network 80001 --core-contract-address 0x2c1Af868C8153E47Ba44F889A610b205c5872935 --destination-chain-id 11155111 --token-address 0xFB6F96b38AEaA0489FC0eEee8B105484f2111d99 --token-id 1
+pnpm hardhat transfer-ERC721-to-destination-chain --network 80001 --core-contract-address 0x8911E121D2008533B25D3901E610F76378339769 --destination-chain-id 11155111 --token-address 0x5a6609233B85e2465B8D9FFe622C941077AaDbAF --token-id 1
 ```
 
 optionally you can transfer back to initial chain
