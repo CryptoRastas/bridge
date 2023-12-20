@@ -82,10 +82,10 @@ Transfer ERC721 to destination chain
 pnpm hardhat transfer-ERC721-to-destination-chain --network 80001 --core-contract-address 0x2c1Af868C8153E47Ba44F889A610b205c5872935 --destination-chain-id 11155111 --destination-core-contract-address 0x5a81cF53F84957bC83D1cdBF13878FA33ea75Ab1 --token-address 0xFB6F96b38AEaA0489FC0eEee8B105484f2111d99 --token-id 1
 ```
 
-optionally you can transfer back to source chain
+optionally you can transfer back to initial chain
 
 ```bash
-pnpm hardhat transfer-ERC721-to-source-chain --network 11155111 --core-contract-address 0x3a4B77E11D13bcEdbeb258EdC9B4c9f32d3d2849 --destination-chain-id 80001 --destination-core-contract-address 0x9795945E11EE64817622FBF51B77335feF678E08 --token-address 0xA91EC3b2bC0025d4A603045Afc3229a072dA5233 --token-id 1
+pnpm hardhat transfer-ERC721-to-destination-chain --network 11155111 --core-contract-address 0x3a4B77E11D13bcEdbeb258EdC9B4c9f32d3d2849 --destination-chain-id 80001 --destination-core-contract-address 0x9795945E11EE64817622FBF51B77335feF678E08 --token-address 0xA91EC3b2bC0025d4A603045Afc3229a072dA5233 --token-id 1
 ```
 
 ## Step 4 - Verifing contracts
