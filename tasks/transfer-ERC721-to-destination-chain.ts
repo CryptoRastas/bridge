@@ -98,11 +98,6 @@ task(
           [1, minDstGas]
         )
 
-        const toAddress = hre.ethers.solidityPacked(
-          ['address'],
-          [sender.address]
-        )
-
         const [estimate] = await ONFT721Core.estimateSendFee(
           destinationChainConfig.abstractId,
           sender.address,

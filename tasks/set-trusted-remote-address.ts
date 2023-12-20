@@ -70,14 +70,9 @@ task('set-trusted-remote-address', 'set trusted remote address')
           deployer
         )
 
-        const trustedRemote = hre.ethers.solidityPacked(
-          ['address', 'address'],
-          [destinationCoreContractAddress, coreContractAddress]
-        )
-
         const tx = await ONFT721Core.setTrustedRemoteAddress(
           destinationChainConfig.abstractId,
-          trustedRemote
+          destinationCoreContractAddress
         )
 
         const receipt = await tx?.wait(12)
