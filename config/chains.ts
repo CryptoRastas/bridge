@@ -40,7 +40,9 @@ export const polygon: Chain = {
     lzEndpoint: {
       address: '0x3c2269811836af69497E5F486A85D7316753cf62'
     }
-  }
+  },
+  minGasRequiredToTransferRemote: 260_000n,
+  minGasRequiredToTransferLocal: 100_000n
 }
 
 export const ethereum: Chain = {
@@ -82,7 +84,9 @@ export const ethereum: Chain = {
     lzEndpoint: {
       address: '0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675'
     }
-  }
+  },
+  minGasRequiredToTransferRemote: 260_000n,
+  minGasRequiredToTransferLocal: 100_000n
 }
 
 export const sepolia: Chain = {
@@ -125,7 +129,9 @@ export const sepolia: Chain = {
       address: '0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1'
     }
   },
-  testnet: true
+  testnet: true,
+  minGasRequiredToTransferRemote: 260_000n,
+  minGasRequiredToTransferLocal: 100_000n
 }
 
 export const polygonMumbai: Chain = {
@@ -165,5 +171,7 @@ export const polygonMumbai: Chain = {
       address: '0xf69186dfBa60DdB133E91E9A4B5673624293d8F8'
     }
   },
-  testnet: true
+  testnet: true,
+  minGasRequiredToTransferRemote: 260_000n,
+  minGasRequiredToTransferLocal: 100_000n
 }

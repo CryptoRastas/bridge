@@ -62,7 +62,7 @@ task('deploy-proxy-ONFT721', 'deploy Proxy ONFT721 contract')
         const proxyONFT721 = await hre.ethers.deployContract(
           'ProxyONFT721',
           [
-            minGasToTransfer || 100_000n,
+            minGasToTransfer || chainConfig.minGasRequiredToTransferLocal,
             lzEndpoint || chainConfig.contracts.lzEndpoint.address,
             proxyToken
           ],

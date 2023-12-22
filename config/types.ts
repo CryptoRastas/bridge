@@ -30,4 +30,6 @@ export interface Chain {
     }
   }
   testnet?: boolean
+  minGasRequiredToTransferRemote: bigint
+  minGasRequiredToTransferLocal: bigint
 }
