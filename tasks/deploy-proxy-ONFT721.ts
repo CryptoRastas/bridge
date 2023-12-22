@@ -19,8 +19,13 @@ task('deploy-proxy-ONFT721', 'deploy Proxy ONFT721 contract')
     0,
     types.int
   )
-  .addOptionalParam('minGasToTransfer', 'Min gas to transfer', 0, types.int)
-  .addOptionalParam('lzEndpoint', 'Lazynft endpoint', '', types.string)
+  .addOptionalParam(
+    'minGasToTransfer',
+    'Min gas to transfer',
+    undefined,
+    types.int
+  )
+  .addOptionalParam('lzEndpoint', 'Lazynft endpoint', undefined, types.string)
   .addParam('proxyToken', 'Proxy token')
   .setAction(
     async (

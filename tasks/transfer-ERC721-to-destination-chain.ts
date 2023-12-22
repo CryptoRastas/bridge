@@ -12,6 +12,7 @@ export type DeployTemplateTask = {
   coreContractAddress: string
   destinationChainId: number
   packetType?: number
+  isProxy?: boolean
 }
 
 task(
@@ -19,6 +20,8 @@ task(
   'transfer ERC721 to destination chain'
 )
   .addParam('tokenAddress', 'Token address')
+  .addOptionalParam('packetType', 'Packet type', undefined, types.int)
+  .addOptionalParam('isProxy', 'Is proxy', true, types.boolean)
   .addParam('tokenId', 'Token id')
   .addParam('coreContractAddress', 'Core contract address')
   .addParam('destinationChainId', 'Destination chain id')
@@ -36,7 +39,8 @@ task(
         tokenId,
         coreContractAddress,
         destinationChainId,
-        packetType
+        packetType,
+        isProxy
       }: DeployTemplateTask,
       hre
     ) => {
@@ -72,7 +76,7 @@ task(
         const [sender] = await hre.ethers.getSigners()
 
         const ONFT721Core = await hre.ethers.getContractAt(
-          'ONFT721Core',
+          isProxy ? 'ProxyONFT721' : 'ONFT721Core',
           coreContractAddress,
           deployer
         )
@@ -132,7 +136,7 @@ task(
 
         const tx = await ERC721.approve(coreContractAddress, tokenId)
 
-        const receipt = await tx?.wait(12)
+        const receipt = await tx?.wait(2)
         const gasUsed = receipt?.gasUsed || 0n
 
         spinner.stop()
@@ -143,7 +147,11 @@ task(
          */
 
         spinner.start()
-        console.log(`ℹ️ Bridging ERC721 to ${destinationChainConfig.name}`)
+        console.log(
+          `ℹ️ Bridging ERC721 to ${destinationChainConfig.name} using ${
+            isProxy ? 'Proxy' : ''
+          }ONFT721${isProxy ? '' : 'Core'}`
+        )
 
         const tx2 = await ONFT721Core.sendFrom(
           sender.address,
@@ -158,7 +166,7 @@ task(
           }
         )
 
-        const receipt2 = await tx2?.wait(12)
+        const receipt2 = await tx2?.wait(2)
         const gasUsed2 = receipt2?.gasUsed || 0n
 
         spinner.stop()

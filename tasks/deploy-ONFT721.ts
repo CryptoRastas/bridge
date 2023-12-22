@@ -20,8 +20,13 @@ task('deploy-ONFT721', 'deploy ONFT721 contract')
     0,
     types.int
   )
-  .addOptionalParam('minGasToTransfer', 'Min gas to transfer', 0, types.int)
-  .addOptionalParam('lzEndpoint', 'Lazynft endpoint', '', types.string)
+  .addOptionalParam(
+    'minGasToTransfer',
+    'Min gas to transfer',
+    undefined,
+    types.int
+  )
+  .addOptionalParam('lzEndpoint', 'Lazynft endpoint', undefined, types.string)
   .addParam('name', 'Token name')
   .addParam('symbol', 'Token symbol')
   .setAction(

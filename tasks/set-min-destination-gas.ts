@@ -80,7 +80,7 @@ task('set-min-destination-gas', 'set min destination gas')
           minGasRequiredToTransfer
         )
 
-        const receipt = await tx?.wait(12)
+        const receipt = await tx?.wait(2)
         const gasUsed = receipt?.gasUsed || 0n
 
         spinner.stop()

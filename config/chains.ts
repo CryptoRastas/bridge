@@ -41,7 +41,7 @@ export const polygon: Chain = {
       address: '0x3c2269811836af69497E5F486A85D7316753cf62'
     }
   },
-  minGasRequiredToTransferRemote: 260_000n,
+  minGasRequiredToTransferRemote: 4_000_000n,
   minGasRequiredToTransferLocal: 100_000n
 }
 
@@ -85,7 +85,7 @@ export const ethereum: Chain = {
       address: '0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675'
     }
   },
-  minGasRequiredToTransferRemote: 260_000n,
+  minGasRequiredToTransferRemote: 4_000_000n,
   minGasRequiredToTransferLocal: 100_000n
 }
 
