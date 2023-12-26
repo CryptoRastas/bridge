@@ -2,8 +2,13 @@
 
 ### Available chains
 
+#### Mainnet
+
 - Ethereum
 - Polygon
+
+#### Testnet
+
 - Mumbai
 - Sepolia
 
@@ -33,7 +38,7 @@ pnpm test:coverage
 ## Deploying MockERC721 (test only)
 
 ```bash
-pnpm hardhat deploy-mock-ERC721 --network 80001 --token-name OMNICHAIN --token-symbol OMNI
+pnpm hardhat deploy-mock-ERC721 --network 11155111 --token-name CRYPTORASTAS --token-symbol CYRS
 ```
 
 ## Step 1 - deploying contracts
@@ -41,13 +46,13 @@ pnpm hardhat deploy-mock-ERC721 --network 80001 --token-name OMNICHAIN --token-s
 Deploy ProxyONFT721 on source chain:
 
 ```bash
-pnpm hardhat deploy-proxy-ONFT721 --network 80001 --proxy-token 0x8e6F5bBCa36879769A6e4C9E807683152b64B6FD
+pnpm hardhat deploy-proxy-ONFT721 --network 11155111 --proxy-token 0x0888CF7Ee20c0E1d43bd2073bb334c65cF7B6FF1
 ```
 
 and deploy ONFT721 on destination chain:
 
 ```bash
-pnpm hardhat deploy-ONFT721 --network 11155111 --name OMNICHAIN --symbol OMNI
+pnpm hardhat deploy-ONFT721 --network 80001 --name CRYPTORASTAS --symbol CYRS
 ```
 
 ## Step 2 - Setting up the bridge
@@ -57,13 +62,13 @@ pnpm hardhat deploy-ONFT721 --network 11155111 --name OMNICHAIN --symbol OMNI
 Set destination chain as trusted remote address on source chain:
 
 ```bash
-pnpm hardhat set-trusted-remote-address --network 80001 --core-contract-address 0x1FB97771E7bd1DB0BF3b063d92e4A58CD191B54C --destination-chain-id 11155111 --destination-core-contract-address 0xE1c8ECbb0789FD6dB4cFb67FA074390c80EbD491
+pnpm hardhat set-trusted-remote-address --network 11155111 --core-contract-address 0xf17c3853379947f7B750953AaFa5C59B78153e10 --destination-chain-id 80001 --destination-core-contract-address 0xc8ce0cA761935859c457C1b0cBE953A66757E777
 ```
 
 repeat the process on the destination chain, to trust the source chain:
 
 ```bash
-pnpm hardhat set-trusted-remote-address --network 11155111 --core-contract-address 0xE1c8ECbb0789FD6dB4cFb67FA074390c80EbD491 --destination-chain-id 80001 --destination-core-contract-address 0x1FB97771E7bd1DB0BF3b063d92e4A58CD191B54C
+pnpm hardhat set-trusted-remote-address --network 80001 --core-contract-address 0xc8ce0cA761935859c457C1b0cBE953A66757E777 --destination-chain-id 11155111 --destination-core-contract-address 0xf17c3853379947f7B750953AaFa5C59B78153e10
 ```
 
 ### Setting min gas required
@@ -71,13 +76,13 @@ pnpm hardhat set-trusted-remote-address --network 11155111 --core-contract-addre
 Set destination chain min gas required to perform actions on chain:
 
 ```bash
-pnpm hardhat set-min-destination-gas --network 80001 --core-contract-address 0x1FB97771E7bd1DB0BF3b063d92e4A58CD191B54C --destination-chain-id 11155111
+pnpm hardhat set-min-destination-gas --network 11155111 --core-contract-address 0xf17c3853379947f7B750953AaFa5C59B78153e10 --destination-chain-id 80001
 ```
 
 repeat the process on the destination chain, to set min gas required to perform actions on chain:
 
 ```bash
-pnpm hardhat set-min-destination-gas --network 11155111 --core-contract-address 0xE1c8ECbb0789FD6dB4cFb67FA074390c80EbD491 --destination-chain-id 80001
+pnpm hardhat set-min-destination-gas --network 80001 --core-contract-address 0xc8ce0cA761935859c457C1b0cBE953A66757E777 --destination-chain-id 11155111
 ```
 
 ## Step 3 - Transfer ERC721
@@ -85,13 +90,13 @@ pnpm hardhat set-min-destination-gas --network 11155111 --core-contract-address 
 Transfer ERC721 to destination chain
 
 ```bash
-pnpm hardhat transfer-ERC721-to-destination-chain --network 80001 --core-contract-address 0x1FB97771E7bd1DB0BF3b063d92e4A58CD191B54C --destination-chain-id 11155111 --token-address 0x8e6F5bBCa36879769A6e4C9E807683152b64B6FD --token-id 1
+pnpm hardhat transfer-ERC721-to-destination-chain --network 11155111 --core-contract-address 0xf17c3853379947f7B750953AaFa5C59B78153e10 --destination-chain-id 80001 --token-address 0x0888CF7Ee20c0E1d43bd2073bb334c65cF7B6FF1 --token-id 1
 ```
 
 optionally you can transfer back to initial chain
 
 ```bash
-pnpm hardhat transfer-ERC721-to-destination-chain --network 11155111 --core-contract-address 0xE1c8ECbb0789FD6dB4cFb67FA074390c80EbD491 --destination-chain-id 80001 --token-address 0xE1c8ECbb0789FD6dB4cFb67FA074390c80EbD491 --token-id 1
+pnpm hardhat transfer-ERC721-to-destination-chain --network 80001 --core-contract-address 0xc8ce0cA761935859c457C1b0cBE953A66757E777 --destination-chain-id 11155111 --token-address 0xc8ce0cA761935859c457C1b0cBE953A66757E777 --token-id 1 --is-proxy false
 ```
 
 ## Step 4 - Verifing contracts
