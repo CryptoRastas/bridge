@@ -46,7 +46,26 @@ describe('Bridge', function () {
   })
 
   describe('Settings', () => {
-    it('should set trusted remote', async function () {})
+    it('should set trusted remote', async function () {
+      const destinationCoreContractAddress = ethers.ZeroAddress
+      const destinationChainIdAbstract = 1234
+
+      await proxyONFT721.setTrustedRemoteAddress(
+        destinationChainIdAbstract,
+        destinationCoreContractAddress
+      )
+
+      const trustedRemoteId = await proxyONFT721.trustedRemoteLookup(
+        destinationChainIdAbstract
+      )
+
+      const isTrusted = await proxyONFT721.isTrustedRemote(
+        destinationChainIdAbstract,
+        trustedRemoteId
+      )
+
+      expect(isTrusted).to.be.true
+    })
   })
 
   describe('Checks', () => {

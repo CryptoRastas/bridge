@@ -38,7 +38,7 @@ pnpm test:coverage
 ## Deploying ERC721Mock (test only)
 
 ```bash
-pnpm hardhat deploy-ERC721-mock --network 11155111 --token-name CRYPTORASTAS --token-symbol CYRS
+pnpm hardhat deploy-ERC721-mock --network 11155111 --token-name CryptoRastas --token-symbol RASTAS
 ```
 
 ## Step 1 - deploying contracts
@@ -52,7 +52,7 @@ pnpm hardhat deploy-proxy-ONFT721 --network 11155111 --proxy-token 0x0888CF7Ee20
 and deploy ONFT721 on destination chain:
 
 ```bash
-pnpm hardhat deploy-ONFT721 --network 80001 --name CRYPTORASTAS --symbol CYRS
+pnpm hardhat deploy-ONFT721 --network 80001 --name CryptoRastas --symbol RASTAS
 ```
 
 ## Step 2 - Setting up the bridge
