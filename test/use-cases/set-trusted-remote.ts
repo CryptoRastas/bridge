@@ -3,24 +3,17 @@ import { expect } from 'chai'
 import { ProxyONFT721 } from '@/typechain/contracts/ProxyONFT721'
 import { deployProxyONFT721Fixture } from '@/test/fixtures/proxyONFT721'
 
-import {
-  abiCoder,
-  getContractAddress,
-  getContractFactory
-} from '@/utils/contracts'
-
 import { getSigners } from '@/utils/signers'
 import { ethers } from 'hardhat'
 
 import { deployLZEndpointMockFixture } from '../fixtures/mocks/lZEndpointMock'
 import { deployERC721MockFixture } from '../fixtures/mocks/ERC721Mock'
 
-describe('Bridge', function () {
+describe('UseCase: set trusted remote address', function () {
   const chainId = 1
   const name = 'CryptoRastas'
   const symbol = 'RASTA'
   let proxyONFT721: ProxyONFT721
-  let proxyONFT721Address: string
   const minGasToTransferAndStore = 100_000n
 
   before(async function () {
@@ -42,7 +35,6 @@ describe('Bridge', function () {
     )
 
     proxyONFT721 = fixture.proxyONFT721
-    proxyONFT721Address = fixture.proxyONFT721Address
   })
 
   describe('Settings', () => {
@@ -69,6 +61,20 @@ describe('Bridge', function () {
   })
 
   describe('Checks', () => {
-    it('should revert if caller is not deployer', async function () {})
+    it('should revert if caller is not deployer', async function () {
+      const [, hacker] = await getSigners()
+
+      const destinationCoreContractAddress = ethers.ZeroAddress
+      const destinationChainIdAbstract = 1234
+
+      await expect(
+        proxyONFT721
+          .connect(hacker)
+          .setTrustedRemoteAddress(
+            destinationChainIdAbstract,
+            destinationCoreContractAddress
+          )
+      ).to.be.revertedWith('Ownable: caller is not the owner')
+    })
   })
 })
