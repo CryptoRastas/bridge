@@ -1,12 +1,13 @@
 import { getContractAddress, getContractFactory } from '@/utils/contracts'
-import { MockERC721__factory } from '@/typechain'
+import { ERC721Mock__factory } from '@/typechain'
 
-export async function eployPMockERC721(name: string, symbol: string) {
-  const MockERC721 = await getContractFactory<MockERC721__factory>('MockERC721')
+export async function deployERC721MockFixture(name: string, symbol: string) {
+  const _ERC721Mock =
+    await getContractFactory<ERC721Mock__factory>('ERC721Mock')
 
-  const mockERC721 = await MockERC721.deploy(name, symbol)
+  const ERC721Mock = await _ERC721Mock.deploy(name, symbol)
 
-  const mockERC721Address = await getContractAddress(mockERC721)
+  const ERC721MockAddress = await getContractAddress(ERC721Mock)
 
-  return { mockERC721, mockERC721Address }
+  return { ERC721Mock, ERC721MockAddress }
 }

@@ -35,10 +35,10 @@ pnpm test:watch
 pnpm test:coverage
 ```
 
-## Deploying MockERC721 (test only)
+## Deploying ERC721Mock (test only)
 
 ```bash
-pnpm hardhat deploy-mock-ERC721 --network 11155111 --token-name CRYPTORASTAS --token-symbol CYRS
+pnpm hardhat deploy-ERC721-mock --network 11155111 --token-name CRYPTORASTAS --token-symbol CYRS
 ```
 
 ## Step 1 - deploying contracts

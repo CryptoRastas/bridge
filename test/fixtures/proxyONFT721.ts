@@ -1,7 +1,7 @@
 import { getContractAddress, getContractFactory } from '@/utils/contracts'
 import { ProxyONFT721__factory } from '@/typechain'
 
-export async function deployProxyONFT721(
+export async function deployProxyONFT721Fixture(
   minGasToTransferAndStore: bigint,
   lzEndpoint: string,
   proxyToken: string

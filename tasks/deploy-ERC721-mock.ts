@@ -5,13 +5,13 @@ import { allowedChainsConfig } from '@/config/config'
 
 const spinner: Spinner = new Spinner(cliSpinner.triangle)
 
-export type DeployMockERC721Task = {
+export type DeployERC721MockTask = {
   accountIndex?: number
   tokenName: string
   tokenSymbol: string
 }
 
-task('deploy-mock-ERC721', 'deploy MockERC721 contract')
+task('deploy-ERC721-mock', 'deploy ERC721Mock contract')
   .addParam('tokenName', 'token name')
   .addParam('tokenSymbol', 'token symbol')
   .addOptionalParam(
@@ -22,7 +22,7 @@ task('deploy-mock-ERC721', 'deploy MockERC721 contract')
   )
   .setAction(
     async (
-      { accountIndex, tokenName, tokenSymbol }: DeployMockERC721Task,
+      { accountIndex, tokenName, tokenSymbol }: DeployERC721MockTask,
       hre
     ) => {
       spinner.start()
@@ -49,11 +49,11 @@ task('deploy-mock-ERC721', 'deploy MockERC721 contract')
          */
 
         console.log(
-          `ℹ️ Deployng MockERC721 contract as ${tokenName} and symbol ${tokenSymbol} on ${chainConfig.name}`
+          `ℹ️ Deployng ERC721Mock contract as ${tokenName} and symbol ${tokenSymbol} on ${chainConfig.name}`
         )
 
         const ERC721 = await hre.ethers.deployContract(
-          'MockERC721',
+          'ERC721Mock',
           [tokenName, tokenSymbol],
           deployer
         )
@@ -83,7 +83,7 @@ task('deploy-mock-ERC721', 'deploy MockERC721 contract')
         spinner.stop()
         console.log('ℹ️ Done and gas used: ', gasUsed2)
 
-        console.log(`✅ Deployed MockERC721 ${tokenName} at ${ERC721Address}`)
+        console.log(`✅ Deployed ERC721Mock ${tokenName} at ${ERC721Address}`)
       } catch (error) {
         spinner.stop()
         console.log(`❌ ERC721 ${tokenName} deploy has been failed`)
