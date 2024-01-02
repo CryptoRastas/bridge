@@ -97,16 +97,20 @@ task(
           packetType || 1n
         )
 
+        const version = 1n
+
         const adapterParams = hre.ethers.solidityPacked(
           ['uint16', 'uint256'],
-          [1, minDstGas]
+          [version, minDstGas]
         )
+
+        const useZRO = false
 
         const [estimate] = await ONFT721Core.estimateSendFee(
           destinationChainConfig.abstractId,
           sender.address,
           tokenId,
-          false,
+          useZRO,
           adapterParams
         )
 
@@ -153,13 +157,15 @@ task(
           }ONFT721${isProxy ? '' : 'Core'}`
         )
 
+        const zroPaymentAddress = hre.ethers.ZeroAddress
+
         const tx2 = await ONFT721Core.sendFrom(
           sender.address,
           destinationChainConfig.abstractId,
           sender.address,
           tokenId,
           sender.address,
-          hre.ethers.ZeroAddress,
+          zroPaymentAddress,
           adapterParams,
           {
             value: estimate
