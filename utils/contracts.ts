@@ -5,10 +5,6 @@ export async function getNetwork() {
   return await ethers.provider.getNetwork()
 }
 
-export async function getSigners() {
-  return await ethers.getSigners()
-}
-
 export async function deployContract<T>(name: string, ...args: T[]) {
   const Contract = await ethers.getContractFactory(name)
   const contract = await Contract.deploy(...args)
