@@ -1,7 +1,7 @@
 import { getContractAddress, getContractFactory } from '@/utils/contracts'
 import { ONFT721__factory } from '@/typechain'
 
-export async function deployONFT721(
+export async function deployONFT721Fixture(
   name: string,
   symbol: string,
   minGasToTransferAndStore: bigint,

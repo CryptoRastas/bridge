@@ -3,14 +3,7 @@ import { expect } from 'chai'
 import { ProxyONFT721 } from '@/typechain/contracts/ProxyONFT721'
 import { deployProxyONFT721Fixture } from '@/test/fixtures/proxyONFT721'
 
-import {
-  abiCoder,
-  getContractAddress,
-  getContractFactory
-} from '@/utils/contracts'
-
 import { getSigners } from '@/utils/signers'
-import { ethers } from 'hardhat'
 
 import { deployLZEndpointMockFixture } from '../fixtures/mocks/lZEndpointMock'
 import { deployERC721MockFixture } from '../fixtures/mocks/ERC721Mock'
