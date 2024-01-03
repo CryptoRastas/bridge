@@ -7,7 +7,7 @@ const spinner: Spinner = new Spinner(cliSpinner.triangle)
 
 export type DeployProxyONFT721ContractTask = {
   accountIndex?: number
-  minGasToTransfer?: number
+  minGasToTransferAndStore?: number
   lzEndpoint?: string
   proxyToken: string
 }
@@ -20,7 +20,7 @@ task('deploy-proxy-ONFT721', 'deploy Proxy ONFT721 contract')
     types.int
   )
   .addOptionalParam(
-    'minGasToTransfer',
+    'minGasToTransferAndStore',
     'Min gas to transfer',
     undefined,
     types.int
@@ -31,7 +31,7 @@ task('deploy-proxy-ONFT721', 'deploy Proxy ONFT721 contract')
     async (
       {
         accountIndex,
-        minGasToTransfer,
+        minGasToTransferAndStore,
         lzEndpoint,
         proxyToken
       }: DeployProxyONFT721ContractTask,
@@ -67,7 +67,8 @@ task('deploy-proxy-ONFT721', 'deploy Proxy ONFT721 contract')
         const proxyONFT721 = await hre.ethers.deployContract(
           'ProxyONFT721',
           [
-            minGasToTransfer || chainConfig.minGasRequiredToTransferLocal,
+            minGasToTransferAndStore ||
+              chainConfig.minGasToTransferAndStoreLocal,
             lzEndpoint || chainConfig.contracts.lzEndpoint.address,
             proxyToken
           ],

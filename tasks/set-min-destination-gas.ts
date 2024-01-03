@@ -70,14 +70,14 @@ task('set-min-destination-gas', 'set min destination gas')
           deployer
         )
 
-        const minGasRequiredToTransfer =
+        const minGasToTransferAndStore =
           minDestinationGas ||
-          destinationChainConfig.minGasRequiredToTransferRemote
+          destinationChainConfig.minGasToTransferAndStoreRemote
 
         const tx = await ONFT721Core.setMinDstGas(
           destinationChainConfig.abstractId,
           packetType || 1n,
-          minGasRequiredToTransfer
+          minGasToTransferAndStore
         )
 
         const receipt = await tx?.wait(2)
@@ -87,7 +87,7 @@ task('set-min-destination-gas', 'set min destination gas')
         console.log('ℹ️ Gas used: ', gasUsed)
 
         console.log(
-          `✅ Min destination gas has been set to ${minGasRequiredToTransfer}`
+          `✅ Min destination gas has been set to ${minGasToTransferAndStore}`
         )
       } catch (error) {
         spinner.stop()

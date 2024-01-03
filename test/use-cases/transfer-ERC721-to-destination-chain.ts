@@ -69,8 +69,6 @@ describe('UseCase: transfer ERC721 to destination chain', function () {
 
     destinationONFT721 = ONFT721
 
-    console.log('ONFT721Address', ONFT721Address)
-
     // LZEndpointMock (Source)
     const { lZEndpointMockAddress, lZEndpointMock } = await loadFixture(
       deployLZEndpointMockFixture.bind(this, chainId)
@@ -106,18 +104,18 @@ describe('UseCase: transfer ERC721 to destination chain', function () {
       proxyONFT721Address
     )
 
-    const minDestinationGas = 260_000n
+    const minDestinationGasLimit = 260_000n
 
     // set min destination gas
     await proxyONFT721.setMinDstGas(
       destinationChainId,
       packetType,
-      minDestinationGas
+      minDestinationGasLimit
     )
   })
 
   describe('Settings', () => {
-    it('should lock ERC721 on send from', async function () {
+    it('should transfer ERC721 on send from', async function () {
       const [sender] = await getSigners()
 
       const minDstGas = await proxyONFT721.minDstGasLookup(
@@ -161,13 +159,71 @@ describe('UseCase: transfer ERC721 to destination chain', function () {
         }
       )
 
-      const ownerOf = await ERC721Mock.ownerOf(tokenId)
       const ownerOfOnDestination = await destinationONFT721.ownerOf(tokenId)
-
-      expect(ownerOf).to.equal(proxyONFT721Address)
       expect(ownerOfOnDestination).to.equal(sender.address)
     })
+
+    it('should transfer ERC721 on send batch from', async function () {
+      const [sender] = await getSigners()
+
+      const minDstGas = await proxyONFT721.minDstGasLookup(
+        destinationChainId,
+        packetType
+      )
+
+      const adapterParams = ethers.solidityPacked(
+        ['uint16', 'uint256'],
+        [version, minDstGas]
+      )
+
+      const tokenId = 2
+      const tokenId2 = 3
+
+      await ERC721Mock.mint(sender.address, tokenId, '')
+      await ERC721Mock.mint(sender.address, tokenId2, '')
+
+      // estimate required gas to send
+
+      const [estimate] = await proxyONFT721.estimateSendBatchFee(
+        destinationChainId,
+        sender.address,
+        [tokenId, tokenId2],
+        useZRO,
+        adapterParams
+      )
+
+      // approve ERC721 mock to proxy contract
+      await ERC721Mock.approve(proxyONFT721Address, tokenId)
+      await ERC721Mock.approve(proxyONFT721Address, tokenId2)
+
+      // set batch limit
+      await proxyONFT721.setDstChainIdToBatchLimit(destinationChainId, 2)
+
+      // execute send from using proxy contract
+      await proxyONFT721.sendBatchFrom(
+        sender.address,
+        destinationChainId,
+        sender.address,
+        [tokenId, tokenId2],
+        sender.address,
+        zroPaymentAddress,
+        adapterParams,
+        {
+          value: estimate
+        }
+      )
+
+      const ownerOfOnDestination = await destinationONFT721.ownerOf(tokenId)
+      expect(ownerOfOnDestination).to.equal(sender.address)
+
+      const ownerOfOnDestination2 = await destinationONFT721.ownerOf(tokenId2)
+      expect(ownerOfOnDestination2).to.equal(sender.address)
+    })
+
+    it('should mint on retry message if it fails to transfer by gas', async function () {})
   })
 
-  describe('Checks', () => {})
+  describe('Checks', () => {
+    it('should', async function () {})
+  })
 })

@@ -72,7 +72,7 @@ task('deploy-ONFT721', 'deploy ONFT721 contract')
           [
             name,
             symbol,
-            minGasToTransfer || 100_000n,
+            minGasToTransfer || chainConfig.minGasToTransferAndStoreLocal,
             lzEndpoint || chainConfig.contracts.lzEndpoint.address
           ],
           deployer
