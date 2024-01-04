@@ -3,18 +3,18 @@ import { getSigners } from '@/utils/signers'
 import { ethers } from 'hardhat'
 
 import {
-  FullEnvironment,
-  createFullEnvironment,
+  Environment,
+  createEnvironment,
   setTrustedRemoteAddress,
   setMinDstGas,
   setDestLzEndpoint
 } from '@/test/fixtures/utils/loadEnvironment'
 
 describe('UseCase: transfer ONFT721 to source chain', function () {
-  let environment: FullEnvironment
+  let environment: Environment
 
   before(async function () {
-    environment = await createFullEnvironment()
+    environment = await createEnvironment()
     await setTrustedRemoteAddress(environment)
     await setMinDstGas(environment)
     await setDestLzEndpoint(environment)

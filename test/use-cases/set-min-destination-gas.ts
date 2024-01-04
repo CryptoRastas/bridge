@@ -1,15 +1,15 @@
 import { expect } from 'chai'
 import { getSigners } from '@/utils/signers'
 import {
-  FullEnvironment,
-  createFullEnvironment
+  Environment,
+  createEnvironment
 } from '@/test/fixtures/utils/loadEnvironment'
 
 describe('UseCase: set min destination gas', function () {
-  let environment: FullEnvironment
+  let environment: Environment
 
   before(async function () {
-    environment = await createFullEnvironment()
+    environment = await createEnvironment()
   })
 
   it('should set min destination gas', async function () {

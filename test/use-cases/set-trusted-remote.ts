@@ -2,15 +2,15 @@ import { expect } from 'chai'
 import { getSigners } from '@/utils/signers'
 import { ethers } from 'hardhat'
 import {
-  FullEnvironment,
-  createFullEnvironment
+  Environment,
+  createEnvironment
 } from '@/test/fixtures/utils/loadEnvironment'
 
 describe('UseCase: set trusted remote address', function () {
-  let environment: FullEnvironment
+  let environment: Environment
 
   before(async function () {
-    environment = await createFullEnvironment()
+    environment = await createEnvironment()
   })
 
   describe('Settings', () => {
