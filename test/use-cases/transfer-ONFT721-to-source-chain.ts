@@ -17,7 +17,7 @@ import { deployLZEndpointMockFixture } from '../fixtures/mocks/lZEndpointMock'
 import { deployERC721MockFixture } from '../fixtures/mocks/ERC721Mock'
 import { deployONFT721Fixture } from '../fixtures/ONFT721'
 
-describe('UseCase: transfer ERC721 to destination chain', function () {
+describe('UseCase: transfer ONFT721 to source chain', function () {
   // source
   const chainId = 1
 
@@ -29,6 +29,7 @@ describe('UseCase: transfer ERC721 to destination chain', function () {
   const symbol = 'RASTA'
 
   let destinationONFT721: ONFT721
+  let destinationONFT721Address: string
 
   let proxyONFT721: ProxyONFT721
   let proxyONFT721Address: string
@@ -71,6 +72,7 @@ describe('UseCase: transfer ERC721 to destination chain', function () {
     )
 
     destinationONFT721 = ONFT721
+    destinationONFT721Address = ONFT721Address
 
     // LZEndpointMock (Source)
     const { lZEndpointMockAddress, lZEndpointMock } = await loadFixture(
@@ -116,7 +118,7 @@ describe('UseCase: transfer ERC721 to destination chain', function () {
 
     const minDestinationGasLimit = 260_000n
 
-    // set min destination gas to destination
+    // set min destination gas
     await proxyONFT721.setMinDstGas(
       destinationChainId,
       packetType,
@@ -131,7 +133,7 @@ describe('UseCase: transfer ERC721 to destination chain', function () {
     )
   })
 
-  it('should transfer ERC721 on send from', async function () {
+  it('should transfer ONFT721 to source from destinaion', async function () {
     const [sender] = await getSigners()
 
     const minDstGas = await proxyONFT721.minDstGasLookup(
@@ -144,7 +146,7 @@ describe('UseCase: transfer ERC721 to destination chain', function () {
       [version, minDstGas]
     )
 
-    const tokenId = 1
+    const tokenId = 4
     await ERC721Mock.mint(sender.address, tokenId, '')
 
     // estimate required gas to send
@@ -173,63 +175,43 @@ describe('UseCase: transfer ERC721 to destination chain', function () {
       }
     )
 
-    const ownerOfOnDestination = await destinationONFT721.ownerOf(tokenId)
-    expect(ownerOfOnDestination).to.equal(sender.address)
-  })
-
-  it('should transfer ERC721 on send batch from', async function () {
-    const [sender] = await getSigners()
-
-    const minDstGas = await proxyONFT721.minDstGasLookup(
-      destinationChainId,
+    // bridge back to source
+    const minDstGasToSource = await destinationONFT721.minDstGasLookup(
+      chainId,
       packetType
     )
 
-    const adapterParams = ethers.solidityPacked(
+    const adapterParamsToSource = ethers.solidityPacked(
       ['uint16', 'uint256'],
-      [version, minDstGas]
+      [version, minDstGasToSource]
     )
 
-    const tokenId = 2
-    const tokenId2 = 3
-
-    await ERC721Mock.mint(sender.address, tokenId, '')
-    await ERC721Mock.mint(sender.address, tokenId2, '')
+    await destinationONFT721.approve(destinationONFT721Address, tokenId)
 
     // estimate required gas to send
-    const [estimate] = await proxyONFT721.estimateSendBatchFee(
-      destinationChainId,
+    const [estimateToSource] = await destinationONFT721.estimateSendFee(
+      chainId,
       sender.address,
-      [tokenId, tokenId2],
+      tokenId,
       useZRO,
-      adapterParams
+      adapterParamsToSource
     )
 
-    // approve ERC721 mock to proxy contract
-    await ERC721Mock.approve(proxyONFT721Address, tokenId)
-    await ERC721Mock.approve(proxyONFT721Address, tokenId2)
-
-    // set batch limit
-    await proxyONFT721.setDstChainIdToBatchLimit(destinationChainId, 2)
-
     // execute send from using proxy contract
-    await proxyONFT721.sendBatchFrom(
+    await destinationONFT721.sendFrom(
       sender.address,
-      destinationChainId,
+      chainId,
       sender.address,
-      [tokenId, tokenId2],
+      tokenId,
       sender.address,
       zroPaymentAddress,
-      adapterParams,
+      adapterParamsToSource,
       {
-        value: estimate
+        value: estimateToSource
       }
     )
 
-    const ownerOfOnDestination = await destinationONFT721.ownerOf(tokenId)
-    expect(ownerOfOnDestination).to.equal(sender.address)
-
-    const ownerOfOnDestination2 = await destinationONFT721.ownerOf(tokenId2)
-    expect(ownerOfOnDestination2).to.equal(sender.address)
+    const ownerOf = await ERC721Mock.ownerOf(tokenId)
+    expect(ownerOf).to.equal(sender.address)
   })
 })
