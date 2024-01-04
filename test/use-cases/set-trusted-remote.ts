@@ -1,58 +1,30 @@
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers'
 import { expect } from 'chai'
-import { ProxyONFT721 } from '@/typechain/contracts/ProxyONFT721'
-import { deployProxyONFT721Fixture } from '@/test/fixtures/proxyONFT721'
-
 import { getSigners } from '@/utils/signers'
 import { ethers } from 'hardhat'
-
-import { deployLZEndpointMockFixture } from '../fixtures/mocks/lZEndpointMock'
-import { deployERC721MockFixture } from '../fixtures/mocks/ERC721Mock'
+import { LoadLightEnvironment } from '@/test/fixtures/utils/loadEnvironment'
 
 describe('UseCase: set trusted remote address', function () {
-  const chainId = 1
-  const name = 'CryptoRastas'
-  const symbol = 'RASTA'
-  let proxyONFT721: ProxyONFT721
-  const minGasToTransferAndStore = 100_000n
+  const bridge = new LoadLightEnvironment()
 
   before(async function () {
-    const { ERC721MockAddress } = await loadFixture(
-      deployERC721MockFixture.bind(this, name, symbol)
-    )
-
-    const { lZEndpointMockAddress } = await loadFixture(
-      deployLZEndpointMockFixture.bind(this, chainId)
-    )
-
-    const fixture = await loadFixture(
-      deployProxyONFT721Fixture.bind(
-        this,
-        minGasToTransferAndStore,
-        lZEndpointMockAddress,
-        ERC721MockAddress
-      )
-    )
-
-    proxyONFT721 = fixture.proxyONFT721
+    await bridge.setup()
   })
 
   describe('Settings', () => {
     it('should set trusted remote', async function () {
       const destinationCoreContractAddress = ethers.ZeroAddress
-      const destinationChainIdAbstract = 1234
 
-      await proxyONFT721.setTrustedRemoteAddress(
-        destinationChainIdAbstract,
+      await bridge.proxyONFT721.setTrustedRemoteAddress(
+        bridge.destinationChainId,
         destinationCoreContractAddress
       )
 
-      const trustedRemoteId = await proxyONFT721.trustedRemoteLookup(
-        destinationChainIdAbstract
+      const trustedRemoteId = await bridge.proxyONFT721.trustedRemoteLookup(
+        bridge.destinationChainId
       )
 
-      const isTrusted = await proxyONFT721.isTrustedRemote(
-        destinationChainIdAbstract,
+      const isTrusted = await bridge.proxyONFT721.isTrustedRemote(
+        bridge.destinationChainId,
         trustedRemoteId
       )
 
@@ -64,15 +36,12 @@ describe('UseCase: set trusted remote address', function () {
     it('should revert if caller is not deployer', async function () {
       const [, hacker] = await getSigners()
 
-      const destinationCoreContractAddress = ethers.ZeroAddress
-      const destinationChainIdAbstract = 1234
-
       await expect(
-        proxyONFT721
+        bridge.proxyONFT721
           .connect(hacker)
           .setTrustedRemoteAddress(
-            destinationChainIdAbstract,
-            destinationCoreContractAddress
+            bridge.destinationChainId,
+            ethers.ZeroAddress
           )
       ).to.be.revertedWith('Ownable: caller is not the owner')
     })
