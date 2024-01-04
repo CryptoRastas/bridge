@@ -1,31 +1,33 @@
 import { expect } from 'chai'
 import { getSigners } from '@/utils/signers'
-import { LoadLightEnvironment } from '@/test/fixtures/utils/loadEnvironment'
+import {
+  FullEnvironment,
+  createFullEnvironment
+} from '@/test/fixtures/utils/loadEnvironment'
 
 describe('UseCase: set min destination gas', function () {
-  const bridge = new LoadLightEnvironment()
+  let environment: FullEnvironment
 
   before(async function () {
-    await bridge.setup()
+    environment = await createFullEnvironment()
   })
 
   it('should set min destination gas', async function () {
-    const destinationChainIdAbstract = 1234
-    const packetType = 1
-    const minDestinationGas = 200_000n
-
-    await bridge.proxyONFT721.setMinDstGas(
-      destinationChainIdAbstract,
-      packetType,
-      minDestinationGas
+    await environment.proxyONFT721.setMinDstGas(
+      environment.destinationChainId,
+      environment.packetType,
+      environment.minGasToTransferAndStoreRemote
     )
 
-    const minDestinationGasStored = await bridge.proxyONFT721.minDstGasLookup(
-      destinationChainIdAbstract,
-      packetType
-    )
+    const minDestinationGasStored =
+      await environment.proxyONFT721.minDstGasLookup(
+        environment.destinationChainId,
+        environment.packetType
+      )
 
-    expect(minDestinationGasStored).to.be.equal(minDestinationGas)
+    expect(minDestinationGasStored).to.be.equal(
+      environment.minGasToTransferAndStoreRemote
+    )
   })
 
   describe('Checks', () => {
@@ -33,9 +35,13 @@ describe('UseCase: set min destination gas', function () {
       const [, hacker] = await getSigners()
 
       await expect(
-        bridge.proxyONFT721
+        environment.proxyONFT721
           .connect(hacker)
-          .setMinDstGas(bridge.destinationChainId, bridge.packetType, 260_000n)
+          .setMinDstGas(
+            environment.destinationChainId,
+            environment.packetType,
+            260_000n
+          )
       ).to.be.revertedWith('Ownable: caller is not the owner')
     })
   })

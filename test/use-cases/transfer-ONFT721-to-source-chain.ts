@@ -1,66 +1,64 @@
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers'
 import { expect } from 'chai'
-import { deployProxyONFT721Fixture } from '@/test/fixtures/proxyONFT721'
-
-import { ONFT721, ProxyONFT721, ERC721Mock } from '@/typechain'
-
-import {
-  abiCoder,
-  getContractAddress,
-  getContractFactory
-} from '@/utils/contracts'
-
 import { getSigners } from '@/utils/signers'
 import { ethers } from 'hardhat'
 
-import { deployLZEndpointMockFixture } from '@/test/fixtures/mocks/lZEndpointMock'
-import { deployERC721MockFixture } from '@/test/fixtures/mocks/ERC721Mock'
-import { deployONFT721Fixture } from '@/test/fixtures/ONFT721'
-import { LoadFullEnvironment } from '@/test/fixtures/utils/loadEnvironment'
+import {
+  FullEnvironment,
+  createFullEnvironment,
+  setTrustedRemoteAddress,
+  setMinDstGas,
+  setDestLzEndpoint
+} from '@/test/fixtures/utils/loadEnvironment'
 
 describe('UseCase: transfer ONFT721 to source chain', function () {
-  const bridge = new LoadFullEnvironment()
+  let environment: FullEnvironment
 
   before(async function () {
-    await bridge.setup()
+    environment = await createFullEnvironment()
+    await setTrustedRemoteAddress(environment)
+    await setMinDstGas(environment)
+    await setDestLzEndpoint(environment)
   })
 
   it('should transfer ONFT721 to source from destinaion', async function () {
     const [sender] = await getSigners()
 
-    const minDstGas = await bridge.proxyONFT721.minDstGasLookup(
-      bridge.destinationChainId,
-      bridge.packetType
+    const minDstGas = await environment.proxyONFT721.minDstGasLookup(
+      environment.destinationChainId,
+      environment.packetType
     )
 
     const adapterParams = ethers.solidityPacked(
       ['uint16', 'uint256'],
-      [bridge.version, minDstGas]
+      [environment.version, minDstGas]
     )
 
     const tokenId = 4
-    await bridge.ERC721Mock.mint(sender.address, tokenId, '')
+    await environment.ERC721Mock.mint(sender.address, tokenId, '')
 
     // estimate required gas to send
-    const [estimate] = await bridge.proxyONFT721.estimateSendFee(
-      bridge.destinationChainId,
+    const [estimate] = await environment.proxyONFT721.estimateSendFee(
+      environment.destinationChainId,
       sender.address,
       tokenId,
-      bridge.useZRO,
+      environment.useZRO,
       adapterParams
     )
 
     // approve ERC721 mock to proxy contract
-    await bridge.ERC721Mock.approve(bridge.proxyONFT721Address, tokenId)
+    await environment.ERC721Mock.approve(
+      environment.proxyONFT721Address,
+      tokenId
+    )
 
     // execute send from using proxy contract
-    await bridge.proxyONFT721.sendFrom(
+    await environment.proxyONFT721.sendFrom(
       sender.address,
-      bridge.destinationChainId,
+      environment.destinationChainId,
       sender.address,
       tokenId,
       sender.address,
-      bridge.zroPaymentAddress,
+      environment.zroPaymentAddress,
       adapterParams,
       {
         value: estimate
@@ -68,45 +66,47 @@ describe('UseCase: transfer ONFT721 to source chain', function () {
     )
 
     // bridge back to source
-    const minDstGasToSource = await bridge.destinationONFT721.minDstGasLookup(
-      bridge.chainId,
-      bridge.packetType
-    )
+    const minDstGasToSource =
+      await environment.destinationONFT721.minDstGasLookup(
+        environment.chainId,
+        environment.packetType
+      )
 
     const adapterParamsToSource = ethers.solidityPacked(
       ['uint16', 'uint256'],
-      [bridge.version, minDstGasToSource]
+      [environment.version, minDstGasToSource]
     )
 
-    await bridge.destinationONFT721.approve(
-      bridge.destinationONFT721Address,
+    await environment.destinationONFT721.approve(
+      environment.destinationONFT721Address,
       tokenId
     )
 
     // estimate required gas to send
-    const [estimateToSource] = await bridge.destinationONFT721.estimateSendFee(
-      bridge.chainId,
-      sender.address,
-      tokenId,
-      bridge.useZRO,
-      adapterParamsToSource
-    )
+    const [estimateToSource] =
+      await environment.destinationONFT721.estimateSendFee(
+        environment.chainId,
+        sender.address,
+        tokenId,
+        environment.useZRO,
+        adapterParamsToSource
+      )
 
     // execute send from using proxy contract
-    await bridge.destinationONFT721.sendFrom(
+    await environment.destinationONFT721.sendFrom(
       sender.address,
-      bridge.chainId,
+      environment.chainId,
       sender.address,
       tokenId,
       sender.address,
-      bridge.zroPaymentAddress,
+      environment.zroPaymentAddress,
       adapterParamsToSource,
       {
         value: estimateToSource
       }
     )
 
-    const ownerOf = await bridge.ERC721Mock.ownerOf(tokenId)
+    const ownerOf = await environment.ERC721Mock.ownerOf(tokenId)
     expect(ownerOf).to.equal(sender.address)
   })
 })

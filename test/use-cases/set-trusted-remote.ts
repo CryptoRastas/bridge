@@ -1,30 +1,34 @@
 import { expect } from 'chai'
 import { getSigners } from '@/utils/signers'
 import { ethers } from 'hardhat'
-import { LoadLightEnvironment } from '@/test/fixtures/utils/loadEnvironment'
+import {
+  FullEnvironment,
+  createFullEnvironment
+} from '@/test/fixtures/utils/loadEnvironment'
 
 describe('UseCase: set trusted remote address', function () {
-  const bridge = new LoadLightEnvironment()
+  let environment: FullEnvironment
 
   before(async function () {
-    await bridge.setup()
+    environment = await createFullEnvironment()
   })
 
   describe('Settings', () => {
     it('should set trusted remote', async function () {
       const destinationCoreContractAddress = ethers.ZeroAddress
 
-      await bridge.proxyONFT721.setTrustedRemoteAddress(
-        bridge.destinationChainId,
+      await environment.proxyONFT721.setTrustedRemoteAddress(
+        environment.destinationChainId,
         destinationCoreContractAddress
       )
 
-      const trustedRemoteId = await bridge.proxyONFT721.trustedRemoteLookup(
-        bridge.destinationChainId
-      )
+      const trustedRemoteId =
+        await environment.proxyONFT721.trustedRemoteLookup(
+          environment.destinationChainId
+        )
 
-      const isTrusted = await bridge.proxyONFT721.isTrustedRemote(
-        bridge.destinationChainId,
+      const isTrusted = await environment.proxyONFT721.isTrustedRemote(
+        environment.destinationChainId,
         trustedRemoteId
       )
 
@@ -37,10 +41,10 @@ describe('UseCase: set trusted remote address', function () {
       const [, hacker] = await getSigners()
 
       await expect(
-        bridge.proxyONFT721
+        environment.proxyONFT721
           .connect(hacker)
           .setTrustedRemoteAddress(
-            bridge.destinationChainId,
+            environment.destinationChainId,
             ethers.ZeroAddress
           )
       ).to.be.revertedWith('Ownable: caller is not the owner')

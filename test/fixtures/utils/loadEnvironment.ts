@@ -6,121 +6,146 @@ import { deployLZEndpointMockFixture } from '@/test/fixtures/mocks/lZEndpointMoc
 import { deployERC721MockFixture } from '@/test/fixtures/mocks/ERC721Mock'
 import { deployONFT721Fixture } from '@/test/fixtures/ONFT721'
 
-export class LoadLightEnvironment {
-  public readonly chainId = 1
-  public readonly destinationChainId = 137
+export type LightEnvironment = {
+  chainId: number
+  name: string
+  symbol: string
+  minGasToTransferAndStoreLocal: bigint
+  packetType: number
+  version: bigint
+  proxyONFT721: ProxyONFT721
+  proxyONFT721Address: string
+  ERC721Mock: ERC721Mock
+  ERC721MockAddress: string
+  LZEndpointMock: LZEndpointMock
+  LZEndpointMockAddress: string
+}
 
-  public readonly name = 'CryptoRastas'
-  public readonly symbol = 'RASTA'
+export const createLightEnvironment = async (): Promise<LightEnvironment> => {
+  const chainId = 1
+  const name = 'CryptoRastas'
+  const symbol = 'RASTA'
+  const minGasToTransferAndStoreLocal = 100_000n
+  const packetType = 1 // sendAndCall
+  const version = 1n // lzapp version
 
-  public readonly minGasToTransferAndStoreLocal = 100_000n
-  public readonly packetType = 1 // sendAndCall
-  public readonly version = 1n // lzapp version
+  const ERC721MockFixture = await loadFixture(
+    deployERC721MockFixture.bind(this, name, symbol)
+  )
 
-  proxyONFT721?: ProxyONFT721
-  proxyONFT721Address?: string
+  const lzEndpointFixture = await loadFixture(
+    deployLZEndpointMockFixture.bind(this, chainId)
+  )
 
-  ERC721Mock?: ERC721Mock
-  ERC721MockAddress?: string
-
-  lzEndpointMock?: LZEndpointMock
-  lzEndpointMockAddress?: string
-
-  async setup() {
-    const ERC721MockFixture = await loadFixture(
-      deployERC721MockFixture.bind(this, this.name, this.symbol)
+  const proxyONFT721Fixture = await loadFixture(
+    deployProxyONFT721Fixture.bind(
+      this,
+      minGasToTransferAndStoreLocal,
+      lzEndpointFixture.LZEndpointMockAddress,
+      ERC721MockFixture.ERC721MockAddress
     )
+  )
 
-    this.ERC721Mock = ERC721MockFixture.ERC721Mock
-    this.ERC721MockAddress = ERC721MockFixture.ERC721MockAddress
-
-    const { lZEndpointMockAddress, lZEndpointMock } = await loadFixture(
-      deployLZEndpointMockFixture.bind(this, this.chainId)
-    )
-
-    this.lzEndpointMock = lZEndpointMock
-    this.lzEndpointMockAddress = lZEndpointMockAddress
-
-    const proxyONFT721Fixture = await loadFixture(
-      deployProxyONFT721Fixture.bind(
-        this,
-        this.minGasToTransferAndStoreLocal,
-        this.lzEndpointMockAddress,
-        this.ERC721MockAddress
-      )
-    )
-
-    this.proxyONFT721 = proxyONFT721Fixture.proxyONFT721
-    this.proxyONFT721Address = proxyONFT721Fixture.proxyONFT721Address
-
-    return this
+  return {
+    ...ERC721MockFixture,
+    ...lzEndpointFixture,
+    ...proxyONFT721Fixture,
+    chainId,
+    name,
+    symbol,
+    minGasToTransferAndStoreLocal,
+    packetType,
+    version
   }
 }
 
-export class LoadFullEnvironment extends LoadLightEnvironment {
-  public readonly useZRO = false // use ZRO (ERC20 token)
-  public readonly zroPaymentAddress = ethers.ZeroAddress // pay as native
+export type FullEnvironment = LightEnvironment & {
+  destinationChainId: number
+  minGasToTransferAndStoreRemote: bigint
+  destinationONFT721: ONFT721
+  destinationONFT721Address: string
+  useZRO: boolean
+  zroPaymentAddress: string
+  destionationLZEndpointMock: LZEndpointMock
+  destinationLZEndpointMockAddress: string
+}
 
-  destinationONFT721?: ONFT721
-  destinationONFT721Address?: string
+export const createFullEnvironment = async (): Promise<FullEnvironment> => {
+  const destinationChainId = 137
+  const useZRO = false // use ZRO (ERC20 token)
+  const zroPaymentAddress = ethers.ZeroAddress // pay as native
+  const minGasToTransferAndStoreRemote = 260_000n
 
-  async setup() {
-    await super.setup()
+  const lightEnvironment = await createLightEnvironment()
 
-    const {
-      lZEndpointMockAddress: lzEndpointMockAddressDestination,
-      lZEndpointMock: lzEndpointMockDestination
-    } = await loadFixture(
-      deployLZEndpointMockFixture.bind(this, this.destinationChainId)
+  const LZEndpointMockDestination = await loadFixture(
+    deployLZEndpointMockFixture.bind(this, destinationChainId)
+  )
+
+  const destionationLZEndpointMock = LZEndpointMockDestination.LZEndpointMock
+  const destinationLZEndpointMockAddress =
+    LZEndpointMockDestination.LZEndpointMockAddress
+
+  const { ONFT721, ONFT721Address } = await loadFixture(
+    deployONFT721Fixture.bind(
+      this,
+      lightEnvironment.name,
+      lightEnvironment.symbol,
+      lightEnvironment.minGasToTransferAndStoreLocal,
+      LZEndpointMockDestination.LZEndpointMockAddress
     )
+  )
 
-    const { ONFT721Address, ONFT721 } = await loadFixture(
-      deployONFT721Fixture.bind(
-        this,
-        this.name,
-        this.symbol,
-        this.minGasToTransferAndStoreLocal,
-        lzEndpointMockAddressDestination
-      )
-    )
+  const destinationONFT721 = ONFT721
+  const destinationONFT721Address = ONFT721Address
 
-    this.destinationONFT721 = ONFT721
-    this.destinationONFT721Address = ONFT721Address
-
-    await this.proxyONFT721.setTrustedRemoteAddress(
-      this.destinationChainId,
-      ONFT721Address
-    )
-
-    await this.destinationONFT721.setTrustedRemoteAddress(
-      this.chainId,
-      this.proxyONFT721Address
-    )
-
-    const minDestinationGasLimit = 260_000n
-
-    await this.proxyONFT721.setMinDstGas(
-      this.destinationChainId,
-      this.packetType,
-      minDestinationGasLimit
-    )
-
-    await this.destinationONFT721.setMinDstGas(
-      this.chainId,
-      this.packetType,
-      minDestinationGasLimit
-    )
-
-    await lzEndpointMockDestination.setDestLzEndpoint(
-      this.proxyONFT721Address,
-      this.lzEndpointMockAddress
-    )
-
-    await this.lzEndpointMock.setDestLzEndpoint(
-      ONFT721Address,
-      lzEndpointMockAddressDestination
-    )
-
-    return this
+  return {
+    ...lightEnvironment,
+    destionationLZEndpointMock,
+    destinationLZEndpointMockAddress,
+    minGasToTransferAndStoreRemote,
+    destinationChainId,
+    destinationONFT721,
+    destinationONFT721Address,
+    useZRO,
+    zroPaymentAddress
   }
+}
+
+export async function setTrustedRemoteAddress(enviorment: FullEnvironment) {
+  await enviorment.proxyONFT721.setTrustedRemoteAddress(
+    enviorment.destinationChainId,
+    enviorment.destinationONFT721Address
+  )
+
+  await enviorment.destinationONFT721.setTrustedRemoteAddress(
+    enviorment.chainId,
+    enviorment.proxyONFT721Address
+  )
+}
+
+export async function setMinDstGas(enviorment: FullEnvironment) {
+  await enviorment.proxyONFT721.setMinDstGas(
+    enviorment.destinationChainId,
+    enviorment.packetType,
+    enviorment.minGasToTransferAndStoreRemote
+  )
+
+  await enviorment.destinationONFT721.setMinDstGas(
+    enviorment.chainId,
+    enviorment.packetType,
+    enviorment.minGasToTransferAndStoreRemote
+  )
+}
+
+export async function setDestLzEndpoint(enviorment: FullEnvironment) {
+  await enviorment.destionationLZEndpointMock.setDestLzEndpoint(
+    enviorment.proxyONFT721Address,
+    enviorment.LZEndpointMockAddress
+  )
+
+  await enviorment.LZEndpointMock.setDestLzEndpoint(
+    enviorment.destinationONFT721Address,
+    enviorment.destinationLZEndpointMockAddress
+  )
 }

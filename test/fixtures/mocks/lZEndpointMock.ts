@@ -2,10 +2,10 @@ import { getContractAddress, getContractFactory } from '@/utils/contracts'
 import { LZEndpointMock__factory } from '@/typechain'
 
 export async function deployLZEndpointMockFixture(chainId: number) {
-  const LZEndpointMock =
+  const _LZEndpointMock =
     await getContractFactory<LZEndpointMock__factory>('LZEndpointMock')
-  const lZEndpointMock = await LZEndpointMock.deploy(chainId)
-  const lZEndpointMockAddress = await getContractAddress(lZEndpointMock)
+  const LZEndpointMock = await _LZEndpointMock.deploy(chainId)
+  const LZEndpointMockAddress = await getContractAddress(LZEndpointMock)
 
-  return { lZEndpointMock, lZEndpointMockAddress }
+  return { LZEndpointMock, LZEndpointMockAddress }
 }
