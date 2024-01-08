@@ -11,10 +11,8 @@ import {
 } from '@/test/fixtures/utils/loadEnvironment'
 
 describe('UseCase: transfer ONFT721 to source chain', function () {
-  let environment: Environment
-
-  before(async function () {
-    environment = await createEnvironment()
+  it('should transfer ONFT721 to source from destinaion', async function () {
+    const environment = await createEnvironment()
 
     await setContractTrustedRemoteAddress(environment.proxyONFT721, {
       remoteChainId: environment.destinationChainId,
@@ -47,9 +45,7 @@ describe('UseCase: transfer ONFT721 to source chain', function () {
       destAddr: environment.proxyONFT721Address,
       lzEndpointAddr: environment.LZEndpointMockAddress
     })
-  })
 
-  it('should transfer ONFT721 to source from destinaion', async function () {
     const [sender] = await getSigners()
 
     const minDstGas = await environment.proxyONFT721.minDstGasLookup(
@@ -137,5 +133,246 @@ describe('UseCase: transfer ONFT721 to source chain', function () {
 
     const ownerOf = await environment.ERC721Mock.ownerOf(tokenId)
     expect(ownerOf).to.equal(sender.address)
+  })
+
+  describe('checks', () => {
+    it('should revert  if destination chain is not set yet', async function () {
+      const environment = await createEnvironment()
+
+      const fakeChainId = 5542
+      const fakeAdapterParamsDstGas = 1n
+
+      await setContractTrustedRemoteAddress(environment.proxyONFT721, {
+        remoteChainId: environment.destinationChainId,
+        remoteAddress: environment.destinationONFT721Address
+      })
+
+      await setContractTrustedRemoteAddress(environment.destinationONFT721, {
+        remoteChainId: environment.chainId,
+        remoteAddress: environment.proxyONFT721Address
+      })
+
+      await setContractMinDstGas(environment.proxyONFT721, {
+        dstChainId: environment.destinationChainId,
+        packetType: environment.packetType,
+        minGas: environment.minGasToTransferAndStoreRemote
+      })
+
+      await setContractDestLzEndpoint(environment.LZEndpointMock, {
+        destAddr: environment.destinationONFT721Address,
+        lzEndpointAddr: environment.destinationLZEndpointMockAddress
+      })
+
+      await setContractDestLzEndpoint(environment.destionationLZEndpointMock, {
+        destAddr: environment.proxyONFT721Address,
+        lzEndpointAddr: environment.LZEndpointMockAddress
+      })
+
+      const [sender] = await getSigners()
+
+      const minDstGas = await environment.proxyONFT721.minDstGasLookup(
+        environment.destinationChainId,
+        environment.packetType
+      )
+
+      const adapterParams = ethers.solidityPacked(
+        ['uint16', 'uint256'],
+        [environment.version, minDstGas]
+      )
+
+      const tokenId = 1
+      await environment.ERC721Mock.mint(sender.address, tokenId, '')
+
+      // estimate required gas to send
+      const [estimate] = await environment.proxyONFT721.estimateSendFee(
+        environment.destinationChainId,
+        sender.address,
+        tokenId,
+        environment.useZRO,
+        adapterParams
+      )
+
+      // approve ERC721 mock to proxy contract
+      await environment.ERC721Mock.approve(
+        environment.proxyONFT721Address,
+        tokenId
+      )
+
+      // execute send from using proxy contract
+      await environment.proxyONFT721.sendFrom(
+        sender.address,
+        environment.destinationChainId,
+        sender.address,
+        tokenId,
+        sender.address,
+        environment.zroPaymentAddress,
+        adapterParams,
+        {
+          value: estimate
+        }
+      )
+
+      // bridge back to source
+      const adapterParamsToSource = ethers.solidityPacked(
+        ['uint16', 'uint256'],
+        [environment.version, fakeAdapterParamsDstGas]
+      )
+
+      await environment.destinationONFT721.approve(
+        environment.destinationONFT721Address,
+        tokenId
+      )
+
+      // estimate required gas to send
+      const [estimateToSource] =
+        await environment.destinationONFT721.estimateSendFee(
+          fakeChainId,
+          sender.address,
+          tokenId,
+          environment.useZRO,
+          adapterParamsToSource
+        )
+
+      // execute send from using proxy contract
+      await expect(
+        environment.destinationONFT721.sendFrom(
+          sender.address,
+          fakeChainId,
+          sender.address,
+          tokenId,
+          sender.address,
+          environment.zroPaymentAddress,
+          adapterParamsToSource,
+          {
+            value: estimateToSource
+          }
+        )
+      ).to.be.revertedWith('LzApp: minGasLimit not set')
+    })
+
+    it('should revert if destination chain trusted remote is not set yet', async function () {
+      const environment = await createEnvironment()
+      const fakeChainId = 5542
+
+      await setContractTrustedRemoteAddress(environment.proxyONFT721, {
+        remoteChainId: environment.destinationChainId,
+        remoteAddress: environment.destinationONFT721Address
+      })
+
+      await setContractTrustedRemoteAddress(environment.destinationONFT721, {
+        remoteChainId: environment.chainId,
+        remoteAddress: environment.proxyONFT721Address
+      })
+
+      await setContractMinDstGas(environment.proxyONFT721, {
+        dstChainId: environment.destinationChainId,
+        packetType: environment.packetType,
+        minGas: environment.minGasToTransferAndStoreRemote
+      })
+
+      // set min dst gas to fake chain
+      await setContractMinDstGas(environment.destinationONFT721, {
+        dstChainId: fakeChainId,
+        packetType: environment.packetType,
+        minGas: environment.minGasToTransferAndStoreRemote
+      })
+
+      await setContractDestLzEndpoint(environment.LZEndpointMock, {
+        destAddr: environment.destinationONFT721Address,
+        lzEndpointAddr: environment.destinationLZEndpointMockAddress
+      })
+
+      await setContractDestLzEndpoint(environment.destionationLZEndpointMock, {
+        destAddr: environment.proxyONFT721Address,
+        lzEndpointAddr: environment.LZEndpointMockAddress
+      })
+
+      const [sender] = await getSigners()
+
+      const minDstGas = await environment.proxyONFT721.minDstGasLookup(
+        environment.destinationChainId,
+        environment.packetType
+      )
+
+      const adapterParams = ethers.solidityPacked(
+        ['uint16', 'uint256'],
+        [environment.version, minDstGas]
+      )
+
+      const tokenId = 4
+      await environment.ERC721Mock.mint(sender.address, tokenId, '')
+
+      // estimate required gas to send
+      const [estimate] = await environment.proxyONFT721.estimateSendFee(
+        environment.destinationChainId,
+        sender.address,
+        tokenId,
+        environment.useZRO,
+        adapterParams
+      )
+
+      // approve ERC721 mock to proxy contract
+      await environment.ERC721Mock.approve(
+        environment.proxyONFT721Address,
+        tokenId
+      )
+
+      // execute send from using proxy contract
+      await environment.proxyONFT721.sendFrom(
+        sender.address,
+        environment.destinationChainId,
+        sender.address,
+        tokenId,
+        sender.address,
+        environment.zroPaymentAddress,
+        adapterParams,
+        {
+          value: estimate
+        }
+      )
+
+      // bridge back to source
+      const minDstGasToSource =
+        await environment.destinationONFT721.minDstGasLookup(
+          fakeChainId,
+          environment.packetType
+        )
+
+      const adapterParamsToSource = ethers.solidityPacked(
+        ['uint16', 'uint256'],
+        [environment.version, minDstGasToSource]
+      )
+
+      await environment.destinationONFT721.approve(
+        environment.destinationONFT721Address,
+        tokenId
+      )
+
+      // estimate required gas to send
+      const [estimateToSource] =
+        await environment.destinationONFT721.estimateSendFee(
+          fakeChainId,
+          sender.address,
+          tokenId,
+          environment.useZRO,
+          adapterParamsToSource
+        )
+
+      // execute send from using proxy contract
+      await expect(
+        environment.destinationONFT721.sendFrom(
+          sender.address,
+          fakeChainId,
+          sender.address,
+          tokenId,
+          sender.address,
+          environment.zroPaymentAddress,
+          adapterParamsToSource,
+          {
+            value: estimateToSource
+          }
+        )
+      ).to.be.revertedWith('LzApp: destination chain is not a trusted source')
+    })
   })
 })
