@@ -27,7 +27,7 @@ describe('UseCase: retry mnessage', function () {
     await setContractMinDstGas(environment.proxyONFT721, {
       dstChainId: environment.destinationChainId,
       packetType: environment.packetType,
-      minGas: 1n
+      minGas: 1n // set as lower to force retry and receive on destination manually
     })
 
     await setContractDestLzEndpoint(environment.LZEndpointMock, {
