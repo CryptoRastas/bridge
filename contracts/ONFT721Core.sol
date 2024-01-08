@@ -130,6 +130,7 @@ abstract contract ONFT721Core is NonblockingLzApp, ERC165, ReentrancyGuard, IONF
         }
 
         uint nextIndex = _creditTill(_srcChainId, toAddress, 0, tokenIds);
+
         if (nextIndex < tokenIds.length) {
             // not enough gas to complete transfers, store to be cleared in another tx
             bytes32 hashedPayload = keccak256(_payload);

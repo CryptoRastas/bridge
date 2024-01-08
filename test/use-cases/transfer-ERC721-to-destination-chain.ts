@@ -5,9 +5,9 @@ import { ethers } from 'hardhat'
 import {
   Environment,
   createEnvironment,
-  setTrustedRemoteAddress,
-  setMinDstGas,
-  setDestLzEndpoint
+  setContractDestLzEndpoint,
+  setContractMinDstGas,
+  setContractTrustedRemoteAddress
 } from '@/test/fixtures/utils/loadEnvironment'
 
 describe('UseCase: transfer ERC721 to destination chain', function () {
@@ -15,9 +15,38 @@ describe('UseCase: transfer ERC721 to destination chain', function () {
 
   before(async function () {
     environment = await createEnvironment()
-    await setTrustedRemoteAddress(environment)
-    await setMinDstGas(environment)
-    await setDestLzEndpoint(environment)
+
+    await setContractTrustedRemoteAddress(environment.proxyONFT721, {
+      remoteChainId: environment.destinationChainId,
+      remoteAddress: environment.destinationONFT721Address
+    })
+
+    await setContractTrustedRemoteAddress(environment.destinationONFT721, {
+      remoteChainId: environment.chainId,
+      remoteAddress: environment.proxyONFT721Address
+    })
+
+    await setContractMinDstGas(environment.proxyONFT721, {
+      dstChainId: environment.destinationChainId,
+      packetType: environment.packetType,
+      minGas: environment.minGasToTransferAndStoreRemote
+    })
+
+    await setContractMinDstGas(environment.destinationONFT721, {
+      dstChainId: environment.chainId,
+      packetType: environment.packetType,
+      minGas: environment.minGasToTransferAndStoreRemote
+    })
+
+    await setContractDestLzEndpoint(environment.LZEndpointMock, {
+      destAddr: environment.destinationONFT721Address,
+      lzEndpointAddr: environment.destinationLZEndpointMockAddress
+    })
+
+    await setContractDestLzEndpoint(environment.destionationLZEndpointMock, {
+      destAddr: environment.proxyONFT721Address,
+      lzEndpointAddr: environment.LZEndpointMockAddress
+    })
   })
 
   it('should transfer ERC721 on send from', async function () {

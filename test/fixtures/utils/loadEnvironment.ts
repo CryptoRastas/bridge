@@ -1,6 +1,12 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers'
 import { deployProxyONFT721Fixture } from '@/test/fixtures/proxyONFT721'
-import { ONFT721, ProxyONFT721, ERC721Mock, LZEndpointMock } from '@/typechain'
+import {
+  ONFT721,
+  ProxyONFT721,
+  ERC721Mock,
+  LZEndpointMock,
+  ONFT721Core
+} from '@/typechain'
 import { ethers } from 'hardhat'
 import { deployLZEndpointMockFixture } from '@/test/fixtures/mocks/lZEndpointMock'
 import { deployERC721MockFixture } from '@/test/fixtures/mocks/ERC721Mock'
@@ -29,14 +35,17 @@ export type Environment = {
   destinationLZEndpointMockAddress: string
 }
 
-export const createEnvironment = async (): Promise<Environment> => {
+export const createEnvironment = async (
+  overrides?: Pick<Environment, 'minGasToTransferAndStoreLocal'>
+): Promise<Environment> => {
   // Metadata
   const chainId = 1
   const name = 'CryptoRastas'
   const symbol = 'RASTA'
 
   // Config
-  const minGasToTransferAndStoreLocal = 100_000n
+  const minGasToTransferAndStoreLocal =
+    100_000n || overrides?.minGasToTransferAndStoreLocal
   const packetType = 1 // sendAndCall
   const version = 1n // lzapp version
 
@@ -87,60 +96,72 @@ export const createEnvironment = async (): Promise<Environment> => {
   const destinationONFT721Address = ONFT721Address
 
   return {
-    ...ERC721MockFixture,
-    ...lzEndpointFixture,
-    ...proxyONFT721Fixture,
     chainId,
     name,
     symbol,
     minGasToTransferAndStoreLocal,
     packetType,
     version,
-    destionationLZEndpointMock,
-    destinationLZEndpointMockAddress,
-    minGasToTransferAndStoreRemote,
+    proxyONFT721: proxyONFT721Fixture.proxyONFT721,
+    proxyONFT721Address: proxyONFT721Fixture.proxyONFT721Address,
+    ERC721Mock: ERC721MockFixture.ERC721Mock,
+    ERC721MockAddress: ERC721MockFixture.ERC721MockAddress,
+    LZEndpointMock: lzEndpointFixture.LZEndpointMock,
+    LZEndpointMockAddress: lzEndpointFixture.LZEndpointMockAddress,
     destinationChainId,
+    minGasToTransferAndStoreRemote,
     destinationONFT721,
     destinationONFT721Address,
     useZRO,
-    zroPaymentAddress
+    zroPaymentAddress,
+    destionationLZEndpointMock,
+    destinationLZEndpointMockAddress
   }
 }
 
-export async function setTrustedRemoteAddress(enviorment: Environment) {
-  await enviorment.proxyONFT721.setTrustedRemoteAddress(
-    enviorment.destinationChainId,
-    enviorment.destinationONFT721Address
-  )
+export type TrustedRemoteParams = {
+  remoteChainId: number
+  remoteAddress: string
+}
 
-  await enviorment.destinationONFT721.setTrustedRemoteAddress(
-    enviorment.chainId,
-    enviorment.proxyONFT721Address
+export async function setContractTrustedRemoteAddress(
+  contract: ONFT721Core,
+  params: TrustedRemoteParams
+) {
+  return await contract.setTrustedRemoteAddress(
+    params.remoteChainId,
+    params.remoteAddress
   )
 }
 
-export async function setMinDstGas(enviorment: Environment) {
-  await enviorment.proxyONFT721.setMinDstGas(
-    enviorment.destinationChainId,
-    enviorment.packetType,
-    enviorment.minGasToTransferAndStoreRemote
-  )
+export type MinDstGasParams = {
+  dstChainId: number
+  packetType: number
+  minGas: bigint
+}
 
-  await enviorment.destinationONFT721.setMinDstGas(
-    enviorment.chainId,
-    enviorment.packetType,
-    enviorment.minGasToTransferAndStoreRemote
+export async function setContractMinDstGas(
+  contract: ONFT721Core,
+  params: MinDstGasParams
+) {
+  return await contract.setMinDstGas(
+    params.dstChainId,
+    params.packetType,
+    params.minGas
   )
 }
 
-export async function setDestLzEndpoint(enviorment: Environment) {
-  await enviorment.destionationLZEndpointMock.setDestLzEndpoint(
-    enviorment.proxyONFT721Address,
-    enviorment.LZEndpointMockAddress
-  )
+export type DestLzEndpointParams = {
+  destAddr: string
+  lzEndpointAddr: string
+}
 
-  await enviorment.LZEndpointMock.setDestLzEndpoint(
-    enviorment.destinationONFT721Address,
-    enviorment.destinationLZEndpointMockAddress
+export async function setContractDestLzEndpoint(
+  contract: LZEndpointMock,
+  params: DestLzEndpointParams
+) {
+  return await contract.setDestLzEndpoint(
+    params.destAddr,
+    params.lzEndpointAddr
   )
 }

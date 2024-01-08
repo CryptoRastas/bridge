@@ -6,7 +6,6 @@ import "./interfaces/ILayerZeroReceiver.sol";
 import "./interfaces/ILayerZeroUserApplicationConfig.sol";
 import "./interfaces/ILayerZeroEndpoint.sol";
 import "./libraries/BytesLib.sol";
-import "hardhat/console.sol";
 
 /*
  * a generic LzReceiver implementation
@@ -43,6 +42,7 @@ abstract contract LzApp is Ownable, ILayerZeroReceiver, ILayerZeroUserApplicatio
 
         bytes memory trustedRemote = trustedRemoteLookup[_srcChainId];
         // if will still block the message pathway from (srcChainId, srcAddress). should not receive message from untrusted remote.
+
         require(
             _srcAddress.length == trustedRemote.length &&
                 trustedRemote.length > 0 &&
