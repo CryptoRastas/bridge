@@ -12,11 +12,10 @@ import coderUtils from '@/utils/coder'
 
 describe('UseCase: retry mnessage', function () {
   let environment: Environment
+  const fakeMinGasToTransferAndStoreRemote = 1n
 
   before(async function () {
-    environment = await createEnvironment({
-      minGasToTransferAndStoreRemote: 2n
-    })
+    environment = await createEnvironment()
 
     await setContractTrustedRemoteAddress(environment.proxyONFT721, {
       remoteChainId: environment.destinationChainId,
@@ -31,7 +30,7 @@ describe('UseCase: retry mnessage', function () {
     await setContractMinDstGas(environment.proxyONFT721, {
       dstChainId: environment.destinationChainId,
       packetType: environment.packetType,
-      minGas: environment.minGasToTransferAndStoreRemote // set as lower to force retry and receive on destination manually
+      minGas: fakeMinGasToTransferAndStoreRemote // set as lower to force retry and receive on destination manually
     })
 
     await setContractDestLzEndpoint(environment.LZEndpointMock, {

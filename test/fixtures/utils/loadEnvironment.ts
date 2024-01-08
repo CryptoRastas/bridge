@@ -35,30 +35,21 @@ export type Environment = {
   destinationLZEndpointMockAddress: string
 }
 
-export const createEnvironment = async (
-  overrides?: Partial<
-    Pick<
-      Environment,
-      'minGasToTransferAndStoreLocal' | 'minGasToTransferAndStoreRemote'
-    >
-  >
-): Promise<Environment> => {
+export const createEnvironment = async (): Promise<Environment> => {
   // Metadata
   const chainId = 1
   const name = 'CryptoRastas'
   const symbol = 'RASTA'
 
   // Config
-  const minGasToTransferAndStoreLocal =
-    overrides?.minGasToTransferAndStoreLocal || 100_000n
+  const minGasToTransferAndStoreLocal = 100_000n
   const packetType = 1 // sendAndCall
   const version = 1n // lzapp version
 
   const destinationChainId = 137
   const useZRO = false // use ZRO (ERC20 token)
   const zroPaymentAddress = ethers.ZeroAddress // pay as native
-  const minGasToTransferAndStoreRemote =
-    overrides?.minGasToTransferAndStoreRemote || 260_000n
+  const minGasToTransferAndStoreRemote = 260_000n
 
   // Mocked ERC721 to handle transfer using proxy
   const ERC721MockFixture = await loadFixture(
