@@ -36,7 +36,12 @@ export type Environment = {
 }
 
 export const createEnvironment = async (
-  overrides?: Pick<Environment, 'minGasToTransferAndStoreLocal'>
+  overrides?: Partial<
+    Pick<
+      Environment,
+      'minGasToTransferAndStoreLocal' | 'minGasToTransferAndStoreRemote'
+    >
+  >
 ): Promise<Environment> => {
   // Metadata
   const chainId = 1
@@ -45,14 +50,15 @@ export const createEnvironment = async (
 
   // Config
   const minGasToTransferAndStoreLocal =
-    100_000n || overrides?.minGasToTransferAndStoreLocal
+    overrides?.minGasToTransferAndStoreLocal || 100_000n
   const packetType = 1 // sendAndCall
   const version = 1n // lzapp version
 
   const destinationChainId = 137
   const useZRO = false // use ZRO (ERC20 token)
   const zroPaymentAddress = ethers.ZeroAddress // pay as native
-  const minGasToTransferAndStoreRemote = 260_000n
+  const minGasToTransferAndStoreRemote =
+    overrides?.minGasToTransferAndStoreRemote || 260_000n
 
   // Mocked ERC721 to handle transfer using proxy
   const ERC721MockFixture = await loadFixture(

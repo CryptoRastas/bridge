@@ -11,8 +11,12 @@ import { ethers } from 'ethers'
 import coderUtils from '@/utils/coder'
 
 describe('UseCase: retry mnessage', function () {
-  it('should mint on destination failed messages', async function () {
-    const environment = await createEnvironment()
+  let environment: Environment
+
+  before(async function () {
+    environment = await createEnvironment({
+      minGasToTransferAndStoreRemote: 2n
+    })
 
     await setContractTrustedRemoteAddress(environment.proxyONFT721, {
       remoteChainId: environment.destinationChainId,
@@ -27,14 +31,16 @@ describe('UseCase: retry mnessage', function () {
     await setContractMinDstGas(environment.proxyONFT721, {
       dstChainId: environment.destinationChainId,
       packetType: environment.packetType,
-      minGas: 1n // set as lower to force retry and receive on destination manually
+      minGas: environment.minGasToTransferAndStoreRemote // set as lower to force retry and receive on destination manually
     })
 
     await setContractDestLzEndpoint(environment.LZEndpointMock, {
       destAddr: environment.destinationONFT721Address,
       lzEndpointAddr: environment.destinationLZEndpointMockAddress
     })
+  })
 
+  it('should mint on destination failed messages', async function () {
     const [sender] = await getSigners()
 
     const minDstGas = await environment.proxyONFT721.minDstGasLookup(
@@ -101,5 +107,55 @@ describe('UseCase: retry mnessage', function () {
     expect(ownerOfOnDestination).to.equal(sender.address)
   })
 
-  describe('Checks', () => {})
+  describe('Checks', () => {
+    it('should not transfer if gas is not enough', async function () {
+      const [sender] = await getSigners()
+
+      const minDstGas = await environment.proxyONFT721.minDstGasLookup(
+        environment.destinationChainId,
+        environment.packetType
+      )
+
+      const adapterParams = ethers.solidityPacked(
+        ['uint16', 'uint256'],
+        [environment.version, minDstGas]
+      )
+      const tokenId = 2
+
+      await environment.ERC721Mock.mint(sender.address, tokenId, '')
+
+      //  estimate required gas to send
+      const [estimate] = await environment.proxyONFT721.estimateSendFee(
+        environment.destinationChainId,
+        sender.address,
+        tokenId,
+        environment.useZRO,
+        adapterParams
+      )
+
+      // approve ERC721 mock to proxy contract
+      await environment.ERC721Mock.approve(
+        environment.proxyONFT721Address,
+        tokenId
+      )
+
+      // execute send from using proxy contract
+      await environment.proxyONFT721.sendFrom(
+        sender.address,
+        environment.destinationChainId,
+        sender.address,
+        tokenId,
+        sender.address,
+        environment.zroPaymentAddress,
+        adapterParams,
+        {
+          value: estimate
+        }
+      )
+
+      await expect(
+        environment.destinationONFT721.ownerOf(tokenId)
+      ).to.be.revertedWith('ERC721: invalid token ID')
+    })
+  })
 })
