@@ -2,10 +2,7 @@ import { expect } from 'chai'
 import { getSigners } from '@/utils/signers'
 import {
   Environment,
-  createEnvironment,
-  setContractMinDstGas,
-  setContractTrustedRemoteAddress,
-  setContractDestLzEndpoint
+  createEnvironment
 } from '@/test/fixtures/utils/loadEnvironment'
 import { ethers } from 'ethers'
 import coderUtils from '@/utils/coder'
@@ -17,26 +14,26 @@ describe('UseCase: retry mnessage', function () {
   before(async function () {
     environment = await createEnvironment()
 
-    await setContractTrustedRemoteAddress(environment.proxyONFT721, {
-      remoteChainId: environment.destinationChainId,
-      remoteAddress: environment.destinationONFT721Address
-    })
+    await environment.proxyONFT721.setTrustedRemoteAddress(
+      environment.destinationChainId,
+      environment.destinationONFT721Address
+    )
 
-    await setContractTrustedRemoteAddress(environment.destinationONFT721, {
-      remoteChainId: environment.chainId,
-      remoteAddress: environment.proxyONFT721Address
-    })
+    await environment.destinationONFT721.setTrustedRemoteAddress(
+      environment.chainId,
+      environment.proxyONFT721Address
+    )
 
-    await setContractMinDstGas(environment.proxyONFT721, {
-      dstChainId: environment.destinationChainId,
-      packetType: environment.packetType,
-      minGas: fakeMinGasToTransferAndStoreRemote // set as lower to force retry and receive on destination manually
-    })
+    await environment.proxyONFT721.setMinDstGas(
+      environment.destinationChainId,
+      environment.packetType,
+      fakeMinGasToTransferAndStoreRemote
+    )
 
-    await setContractDestLzEndpoint(environment.LZEndpointMock, {
-      destAddr: environment.destinationONFT721Address,
-      lzEndpointAddr: environment.destinationLZEndpointMockAddress
-    })
+    await environment.LZEndpointMock.setDestLzEndpoint(
+      environment.destinationONFT721Address,
+      environment.destinationLZEndpointMockAddress
+    )
   })
 
   it('should mint on destination failed messages', async function () {
@@ -84,6 +81,7 @@ describe('UseCase: retry mnessage', function () {
       }
     )
 
+    /// even if the message failed to mint, we can retry it manually using the payload and path
     const path = ethers.solidityPacked(
       ['address', 'bytes'],
       [environment.proxyONFT721Address, environment.destinationONFT721Address]
@@ -152,6 +150,7 @@ describe('UseCase: retry mnessage', function () {
         }
       )
 
+      /// it should fail since mint has failed
       await expect(
         environment.destinationONFT721.ownerOf(tokenId)
       ).to.be.revertedWith('ERC721: invalid token ID')

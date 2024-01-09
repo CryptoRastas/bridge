@@ -15,7 +15,9 @@
     "test": "NODE_ENV=development hardhat test",
     "typechain": "hardhat typechain",
     "test:coverage": "hardhat coverage",
-    "test:watch": "hardhat typechain && chokidar '(contracts|test)/**/*' -c 'npx hardhat test'"
+    "test:watch": "hardhat typechain && chokidar '(contracts|test)/**/*' -c 'npx hardhat test'",
+    "release:localhost": "NODE_ENV=development && pnpm deploy",
+    "release": "hardhat run scripts/deploy.ts"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.2",

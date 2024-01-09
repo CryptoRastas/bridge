@@ -2,49 +2,43 @@ import { expect } from 'chai'
 import { getSigners } from '@/utils/signers'
 import { ethers } from 'hardhat'
 
-import {
-  Environment,
-  createEnvironment,
-  setContractDestLzEndpoint,
-  setContractMinDstGas,
-  setContractTrustedRemoteAddress
-} from '@/test/fixtures/utils/loadEnvironment'
+import { createEnvironment } from '@/test/fixtures/utils/loadEnvironment'
 
 describe('UseCase: transfer ONFT721 to source chain', function () {
   it('should transfer ONFT721 to source from destinaion', async function () {
     const environment = await createEnvironment()
 
-    await setContractTrustedRemoteAddress(environment.proxyONFT721, {
-      remoteChainId: environment.destinationChainId,
-      remoteAddress: environment.destinationONFT721Address
-    })
+    await environment.proxyONFT721.setTrustedRemoteAddress(
+      environment.destinationChainId,
+      environment.destinationONFT721Address
+    )
 
-    await setContractTrustedRemoteAddress(environment.destinationONFT721, {
-      remoteChainId: environment.chainId,
-      remoteAddress: environment.proxyONFT721Address
-    })
+    await environment.destinationONFT721.setTrustedRemoteAddress(
+      environment.chainId,
+      environment.proxyONFT721Address
+    )
 
-    await setContractMinDstGas(environment.proxyONFT721, {
-      dstChainId: environment.destinationChainId,
-      packetType: environment.packetType,
-      minGas: environment.minGasToTransferAndStoreRemote
-    })
+    await environment.proxyONFT721.setMinDstGas(
+      environment.destinationChainId,
+      environment.packetType,
+      environment.minGasToTransferAndStoreRemote
+    )
 
-    await setContractMinDstGas(environment.destinationONFT721, {
-      dstChainId: environment.chainId,
-      packetType: environment.packetType,
-      minGas: environment.minGasToTransferAndStoreRemote
-    })
+    await environment.destinationONFT721.setMinDstGas(
+      environment.chainId,
+      environment.packetType,
+      environment.minGasToTransferAndStoreRemote
+    )
 
-    await setContractDestLzEndpoint(environment.LZEndpointMock, {
-      destAddr: environment.destinationONFT721Address,
-      lzEndpointAddr: environment.destinationLZEndpointMockAddress
-    })
+    await environment.LZEndpointMock.setDestLzEndpoint(
+      environment.destinationONFT721Address,
+      environment.destinationLZEndpointMockAddress
+    )
 
-    await setContractDestLzEndpoint(environment.destionationLZEndpointMock, {
-      destAddr: environment.proxyONFT721Address,
-      lzEndpointAddr: environment.LZEndpointMockAddress
-    })
+    await environment.destionationLZEndpointMock.setDestLzEndpoint(
+      environment.proxyONFT721Address,
+      environment.LZEndpointMockAddress
+    )
 
     const [sender] = await getSigners()
 
@@ -142,31 +136,37 @@ describe('UseCase: transfer ONFT721 to source chain', function () {
       const fakeChainId = 5542
       const fakeAdapterParamsDstGas = 1n
 
-      await setContractTrustedRemoteAddress(environment.proxyONFT721, {
-        remoteChainId: environment.destinationChainId,
-        remoteAddress: environment.destinationONFT721Address
-      })
+      await environment.proxyONFT721.setTrustedRemoteAddress(
+        environment.destinationChainId,
+        environment.destinationONFT721Address
+      )
 
-      await setContractTrustedRemoteAddress(environment.destinationONFT721, {
-        remoteChainId: environment.chainId,
-        remoteAddress: environment.proxyONFT721Address
-      })
+      await environment.destinationONFT721.setTrustedRemoteAddress(
+        environment.chainId,
+        environment.proxyONFT721Address
+      )
 
-      await setContractMinDstGas(environment.proxyONFT721, {
-        dstChainId: environment.destinationChainId,
-        packetType: environment.packetType,
-        minGas: environment.minGasToTransferAndStoreRemote
-      })
+      await environment.proxyONFT721.setMinDstGas(
+        environment.destinationChainId,
+        environment.packetType,
+        environment.minGasToTransferAndStoreRemote
+      )
 
-      await setContractDestLzEndpoint(environment.LZEndpointMock, {
-        destAddr: environment.destinationONFT721Address,
-        lzEndpointAddr: environment.destinationLZEndpointMockAddress
-      })
+      await environment.destinationONFT721.setMinDstGas(
+        environment.chainId,
+        environment.packetType,
+        environment.minGasToTransferAndStoreRemote
+      )
 
-      await setContractDestLzEndpoint(environment.destionationLZEndpointMock, {
-        destAddr: environment.proxyONFT721Address,
-        lzEndpointAddr: environment.LZEndpointMockAddress
-      })
+      await environment.LZEndpointMock.setDestLzEndpoint(
+        environment.destinationONFT721Address,
+        environment.destinationLZEndpointMockAddress
+      )
+
+      await environment.destionationLZEndpointMock.setDestLzEndpoint(
+        environment.proxyONFT721Address,
+        environment.LZEndpointMockAddress
+      )
 
       const [sender] = await getSigners()
 
@@ -254,39 +254,37 @@ describe('UseCase: transfer ONFT721 to source chain', function () {
       const environment = await createEnvironment()
       const fakeChainId = 5542
 
-      await setContractTrustedRemoteAddress(environment.proxyONFT721, {
-        remoteChainId: environment.destinationChainId,
-        remoteAddress: environment.destinationONFT721Address
-      })
+      await environment.proxyONFT721.setTrustedRemoteAddress(
+        environment.destinationChainId,
+        environment.destinationONFT721Address
+      )
 
-      await setContractTrustedRemoteAddress(environment.destinationONFT721, {
-        remoteChainId: environment.chainId,
-        remoteAddress: environment.proxyONFT721Address
-      })
+      await environment.destinationONFT721.setTrustedRemoteAddress(
+        environment.chainId,
+        environment.proxyONFT721Address
+      )
 
-      await setContractMinDstGas(environment.proxyONFT721, {
-        dstChainId: environment.destinationChainId,
-        packetType: environment.packetType,
-        minGas: environment.minGasToTransferAndStoreRemote
-      })
+      await environment.proxyONFT721.setMinDstGas(
+        environment.destinationChainId,
+        environment.packetType,
+        environment.minGasToTransferAndStoreRemote
+      )
 
-      // set min dst gas to fake chain
-      await setContractMinDstGas(environment.destinationONFT721, {
-        dstChainId: fakeChainId,
-        packetType: environment.packetType,
-        minGas: environment.minGasToTransferAndStoreRemote
-      })
+      await environment.destinationONFT721.setMinDstGas(
+        fakeChainId,
+        environment.packetType,
+        environment.minGasToTransferAndStoreRemote
+      )
 
-      await setContractDestLzEndpoint(environment.LZEndpointMock, {
-        destAddr: environment.destinationONFT721Address,
-        lzEndpointAddr: environment.destinationLZEndpointMockAddress
-      })
+      await environment.LZEndpointMock.setDestLzEndpoint(
+        environment.destinationONFT721Address,
+        environment.destinationLZEndpointMockAddress
+      )
 
-      await setContractDestLzEndpoint(environment.destionationLZEndpointMock, {
-        destAddr: environment.proxyONFT721Address,
-        lzEndpointAddr: environment.LZEndpointMockAddress
-      })
-
+      await environment.destionationLZEndpointMock.setDestLzEndpoint(
+        environment.proxyONFT721Address,
+        environment.LZEndpointMockAddress
+      )
       const [sender] = await getSigners()
 
       const minDstGas = await environment.proxyONFT721.minDstGasLookup(

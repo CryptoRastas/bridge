@@ -129,6 +129,8 @@ abstract contract ONFT721Core is NonblockingLzApp, ERC165, ReentrancyGuard, IONF
             toAddress := mload(add(toAddressBytes, 20))
         }
 
+        /// @dev if it returns zero, NFT won't be minted to the receiver, but the payload will be stored
+        ///      and can be cleared later by anyone with enough gas
         uint nextIndex = _creditTill(_srcChainId, toAddress, 0, tokenIds);
 
         if (nextIndex < tokenIds.length) {
@@ -154,6 +156,7 @@ abstract contract ONFT721Core is NonblockingLzApp, ERC165, ReentrancyGuard, IONF
             storedCredits[hashedPayload].index,
             tokenIds
         );
+
         require(nextIndex > storedCredits[hashedPayload].index, "not enough gas to process credit transfer");
 
         if (nextIndex == tokenIds.length) {
@@ -193,6 +196,7 @@ abstract contract ONFT721Core is NonblockingLzApp, ERC165, ReentrancyGuard, IONF
         return i;
     }
 
+    /// @dev same as constructor args
     function setMinGasToTransferAndStore(uint _minGasToTransferAndStore) external onlyOwner {
         require(_minGasToTransferAndStore > 0, "minGasToTransferAndStore must be > 0");
         minGasToTransferAndStore = _minGasToTransferAndStore;

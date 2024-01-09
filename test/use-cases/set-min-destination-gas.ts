@@ -12,7 +12,8 @@ describe('UseCase: set min destination gas', function () {
     environment = await createEnvironment()
   })
 
-  it('should set min destination gas', async function () {
+  it('should set min destination gas limit', async function () {
+    /// setup gas limit to send NFT to destination chain
     await environment.proxyONFT721.setMinDstGas(
       environment.destinationChainId,
       environment.packetType,

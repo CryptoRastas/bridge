@@ -9,9 +9,11 @@ import "./ONFT721Core.sol";
 contract ProxyONFT721 is ONFT721Core, IERC721Receiver {
     using ERC165Checker for address;
 
+    /// @dev ERC721 token to be proxied
     IERC721 public immutable token;
 
     constructor(
+        /// @dev required gas to transfer and store NFT locally
         uint _minGasToTransferAndStore,
         address _lzEndpoint,
         address _proxyToken
@@ -20,20 +22,23 @@ contract ProxyONFT721 is ONFT721Core, IERC721Receiver {
         token = IERC721(_proxyToken);
     }
 
+    /// @dev interface to handle ERC721 token transfer
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return interfaceId == type(IERC721Receiver).interfaceId || super.supportsInterface(interfaceId);
     }
 
+    /// @dev lock NFT on source chain
     function _debitFrom(address _from, uint16, bytes memory, uint _tokenId) internal virtual override {
         require(_from == _msgSender(), "ProxyONFT721: owner is not send caller");
         token.safeTransferFrom(_from, address(this), _tokenId);
     }
 
-    // TODO apply same changes from regular ONFT721
+    /// @dev unlock NFT on source chain
     function _creditTo(uint16, address _toAddress, uint _tokenId) internal virtual override {
         token.safeTransferFrom(address(this), _toAddress, _tokenId);
     }
 
+    /// @inheritdoc IERC721Receiver
     function onERC721Received(address _operator, address, uint, bytes memory) public virtual override returns (bytes4) {
         // only allow `this` to transfer token from others
         if (_operator != address(this)) return bytes4(0);

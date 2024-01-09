@@ -165,6 +165,8 @@ abstract contract LzApp is Ownable, ILayerZeroReceiver, ILayerZeroUserApplicatio
         emit SetPrecrime(_precrime);
     }
 
+    /// @dev the limit amount of gas required to send a message
+    ///      to the destination chain and pay services gas fee
     function setMinDstGas(uint16 _dstChainId, uint16 _packetType, uint _minGas) external onlyOwner {
         minDstGasLookup[_dstChainId][_packetType] = _minGas;
         emit SetMinDstGas(_dstChainId, _packetType, _minGas);

@@ -17,6 +17,8 @@ describe('UseCase: set trusted remote address', function () {
     it('should set trusted remote', async function () {
       const destinationCoreContractAddress = ethers.ZeroAddress
 
+      /// in order to handle both chain we need to trust both contracts
+      /// for test purposes we will only on source chain
       await environment.proxyONFT721.setTrustedRemoteAddress(
         environment.destinationChainId,
         destinationCoreContractAddress

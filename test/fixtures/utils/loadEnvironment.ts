@@ -1,12 +1,7 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers'
 import { deployProxyONFT721Fixture } from '@/test/fixtures/proxyONFT721'
-import {
-  ONFT721,
-  ProxyONFT721,
-  ERC721Mock,
-  LZEndpointMock,
-  ONFT721Core
-} from '@/typechain'
+import { ONFT721, ProxyONFT721, ERC721Mock, LZEndpointMock } from '@/typechain'
+
 import { ethers } from 'hardhat'
 import { deployLZEndpointMockFixture } from '@/test/fixtures/mocks/lZEndpointMock'
 import { deployERC721MockFixture } from '@/test/fixtures/mocks/ERC721Mock'
@@ -46,21 +41,25 @@ export const createEnvironment = async (): Promise<Environment> => {
   const packetType = 1 // sendAndCall
   const version = 1n // lzapp version
 
+  // Destination chain config
   const destinationChainId = 137
+
+  // Destination chain config pament
   const useZRO = false // use ZRO (ERC20 token)
   const zroPaymentAddress = ethers.ZeroAddress // pay as native
   const minGasToTransferAndStoreRemote = 260_000n
 
-  // Mocked ERC721 to handle transfer using proxy
+  // ERC721 to handle transfer using proxy
   const ERC721MockFixture = await loadFixture(
     deployERC721MockFixture.bind(this, name, symbol)
   )
 
-  // Mocked LZEndpoint to handle bridge (source)
+  // LZEndpoint to handle bridge on source chain
   const lzEndpointFixture = await loadFixture(
     deployLZEndpointMockFixture.bind(this, chainId)
   )
 
+  // source chain proxy
   const proxyONFT721Fixture = await loadFixture(
     deployProxyONFT721Fixture.bind(
       this,
@@ -70,7 +69,7 @@ export const createEnvironment = async (): Promise<Environment> => {
     )
   )
 
-  // Mocked LZEndpoint to handle bridge (destination)
+  // LZEndpoint to handle bridge on destination chain
   const { LZEndpointMock, LZEndpointMockAddress } = await loadFixture(
     deployLZEndpointMockFixture.bind(this, destinationChainId)
   )
@@ -78,7 +77,7 @@ export const createEnvironment = async (): Promise<Environment> => {
   const destionationLZEndpointMock = LZEndpointMock
   const destinationLZEndpointMockAddress = LZEndpointMockAddress
 
-  // Mocked ONFT721 to handle transfer
+  // ONFT721 to handle transfer on destination chain
   const { ONFT721, ONFT721Address } = await loadFixture(
     deployONFT721Fixture.bind(
       this,
@@ -93,18 +92,15 @@ export const createEnvironment = async (): Promise<Environment> => {
   const destinationONFT721Address = ONFT721Address
 
   return {
+    ...proxyONFT721Fixture,
+    ...ERC721MockFixture,
+    ...lzEndpointFixture,
     chainId,
     name,
     symbol,
     minGasToTransferAndStoreLocal,
     packetType,
     version,
-    proxyONFT721: proxyONFT721Fixture.proxyONFT721,
-    proxyONFT721Address: proxyONFT721Fixture.proxyONFT721Address,
-    ERC721Mock: ERC721MockFixture.ERC721Mock,
-    ERC721MockAddress: ERC721MockFixture.ERC721MockAddress,
-    LZEndpointMock: lzEndpointFixture.LZEndpointMock,
-    LZEndpointMockAddress: lzEndpointFixture.LZEndpointMockAddress,
     destinationChainId,
     minGasToTransferAndStoreRemote,
     destinationONFT721,
@@ -114,51 +110,4 @@ export const createEnvironment = async (): Promise<Environment> => {
     destionationLZEndpointMock,
     destinationLZEndpointMockAddress
   }
-}
-
-export type TrustedRemoteParams = {
-  remoteChainId: number
-  remoteAddress: string
-}
-
-export async function setContractTrustedRemoteAddress(
-  contract: ONFT721Core,
-  params: TrustedRemoteParams
-) {
-  return await contract.setTrustedRemoteAddress(
-    params.remoteChainId,
-    params.remoteAddress
-  )
-}
-
-export type MinDstGasParams = {
-  dstChainId: number
-  packetType: number
-  minGas: bigint
-}
-
-export async function setContractMinDstGas(
-  contract: ONFT721Core,
-  params: MinDstGasParams
-) {
-  return await contract.setMinDstGas(
-    params.dstChainId,
-    params.packetType,
-    params.minGas
-  )
-}
-
-export type DestLzEndpointParams = {
-  destAddr: string
-  lzEndpointAddr: string
-}
-
-export async function setContractDestLzEndpoint(
-  contract: LZEndpointMock,
-  params: DestLzEndpointParams
-) {
-  return await contract.setDestLzEndpoint(
-    params.destAddr,
-    params.lzEndpointAddr
-  )
 }
