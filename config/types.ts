@@ -30,6 +30,8 @@ export interface Chain {
     }
   }
   testnet?: boolean
+  /// @dev min gas limit
   minGasToTransferAndStoreRemote: bigint
+  /// @dev gas amount required to transfer and store NFT
   minGasToTransferAndStoreLocal: bigint
 }

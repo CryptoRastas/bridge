@@ -29,6 +29,13 @@ task('deploy-ERC721-mock', 'deploy ERC721Mock contract')
 
       try {
         const chainConfig = allowedChainsConfig[+hre.network.name]
+
+        if (!chainConfig.testnet) {
+          console.log(
+            `⚠️  ${chainConfig.name} is not a testnet, please use only for testing purposes!`
+          )
+        }
+
         if (!chainConfig) {
           spinner.stop()
           throw new Error('Chain config not found')
