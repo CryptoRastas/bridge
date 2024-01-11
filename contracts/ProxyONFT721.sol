@@ -22,6 +22,29 @@ contract ProxyONFT721 is ONFT721Core, IERC721Receiver {
         token = IERC721(_proxyToken);
     }
 
+    function _send(
+        address _from,
+        uint16 _dstChainId,
+        bytes memory _toAddress,
+        address _ERC721Address,
+        uint[] memory _tokenIds,
+        address payable _refundAddress,
+        address _zroPaymentAddress,
+        bytes memory _adapterParams
+    ) internal virtual override {
+        require(_ERC721Address == address(token), "ProxyONFT721: invalid ERC721 token");
+        super._send(
+            _from,
+            _dstChainId,
+            _toAddress,
+            _ERC721Address,
+            _tokenIds,
+            _refundAddress,
+            _zroPaymentAddress,
+            _adapterParams
+        );
+    }
+
     /// @dev interface to handle ERC721 token transfer
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return interfaceId == type(IERC721Receiver).interfaceId || super.supportsInterface(interfaceId);

@@ -108,7 +108,7 @@ describe('UseCase: transfer ONFT721 to source chain', function () {
       await environment.destinationONFT721.estimateSendFee(
         environment.chainId,
         sender.address,
-        environment.ERC721MockAddress,
+        environment.destinationONFT721Address,
         tokenId,
         environment.useZRO,
         adapterParamsToSource
@@ -119,7 +119,7 @@ describe('UseCase: transfer ONFT721 to source chain', function () {
       sender.address,
       environment.chainId,
       sender.address,
-      environment.ERC721MockAddress,
+      environment.destinationONFT721Address,
       tokenId,
       sender.address,
       environment.zroPaymentAddress,
@@ -234,7 +234,7 @@ describe('UseCase: transfer ONFT721 to source chain', function () {
         await environment.destinationONFT721.estimateSendFee(
           fakeChainId,
           sender.address,
-          environment.ERC721MockAddress,
+          environment.destinationONFT721Address,
           tokenId,
           environment.useZRO,
           adapterParamsToSource
@@ -246,7 +246,7 @@ describe('UseCase: transfer ONFT721 to source chain', function () {
           sender.address,
           fakeChainId,
           sender.address,
-          environment.ERC721MockAddress,
+          environment.destinationONFT721Address,
           tokenId,
           sender.address,
           environment.zroPaymentAddress,
@@ -361,7 +361,7 @@ describe('UseCase: transfer ONFT721 to source chain', function () {
         await environment.destinationONFT721.estimateSendFee(
           fakeChainId,
           sender.address,
-          environment.ERC721MockAddress,
+          environment.destinationONFT721Address,
           tokenId,
           environment.useZRO,
           adapterParamsToSource
@@ -373,7 +373,7 @@ describe('UseCase: transfer ONFT721 to source chain', function () {
           sender.address,
           fakeChainId,
           sender.address,
-          environment.ERC721MockAddress,
+          environment.destinationONFT721Address,
           tokenId,
           sender.address,
           environment.zroPaymentAddress,
@@ -383,6 +383,138 @@ describe('UseCase: transfer ONFT721 to source chain', function () {
           }
         )
       ).to.be.revertedWith('LzApp: destination chain is not a trusted source')
+    })
+
+    it('should revert if try to transfer invalid ONFT721 token', async function () {
+      const message = 'ONFT721: invalid ERC721 token'
+
+      const environment = await createEnvironment()
+
+      await environment.proxyONFT721.setTrustedRemoteAddress(
+        environment.destinationChainId,
+        environment.destinationONFT721Address
+      )
+
+      await environment.destinationONFT721.setTrustedRemoteAddress(
+        environment.chainId,
+        environment.proxyONFT721Address
+      )
+
+      await environment.proxyONFT721.setMinDstGas(
+        environment.destinationChainId,
+        environment.packetType,
+        environment.minGasToTransferAndStoreRemote
+      )
+
+      await environment.destinationONFT721.setMinDstGas(
+        environment.chainId,
+        environment.packetType,
+        environment.minGasToTransferAndStoreRemote
+      )
+
+      await environment.LZEndpointMock.setDestLzEndpoint(
+        environment.destinationONFT721Address,
+        environment.destinationLZEndpointMockAddress
+      )
+
+      await environment.destionationLZEndpointMock.setDestLzEndpoint(
+        environment.proxyONFT721Address,
+        environment.LZEndpointMockAddress
+      )
+
+      const [sender] = await getSigners()
+
+      const minDstGas = await environment.proxyONFT721.minDstGasLookup(
+        environment.destinationChainId,
+        environment.packetType
+      )
+
+      const adapterParams = ethers.solidityPacked(
+        ['uint16', 'uint256'],
+        [environment.version, minDstGas]
+      )
+
+      const tokenId = 4
+      await environment.ERC721Mock.mint(sender.address, tokenId, '')
+
+      // estimate required gas to send
+      const [estimate] = await environment.proxyONFT721.estimateSendFee(
+        environment.destinationChainId,
+        sender.address,
+        environment.ERC721MockAddress,
+        tokenId,
+        environment.useZRO,
+        adapterParams
+      )
+
+      // approve ERC721 mock to proxy contract
+      await environment.ERC721Mock.approve(
+        environment.proxyONFT721Address,
+        tokenId
+      )
+
+      // execute send from using proxy contract
+      await environment.proxyONFT721.sendFrom(
+        sender.address,
+        environment.destinationChainId,
+        sender.address,
+        environment.ERC721MockAddress,
+        tokenId,
+        sender.address,
+        environment.zroPaymentAddress,
+        adapterParams,
+        {
+          value: estimate
+        }
+      )
+
+      // bridge back to source
+      const minDstGasToSource =
+        await environment.destinationONFT721.minDstGasLookup(
+          environment.chainId,
+          environment.packetType
+        )
+
+      const adapterParamsToSource = ethers.solidityPacked(
+        ['uint16', 'uint256'],
+        [environment.version, minDstGasToSource]
+      )
+
+      await environment.destinationONFT721.approve(
+        environment.destinationONFT721Address,
+        tokenId
+      )
+
+      // estimate required gas to send
+      const [estimateToSource] =
+        await environment.destinationONFT721.estimateSendFee(
+          environment.chainId,
+          sender.address,
+          environment.destinationONFT721Address,
+          tokenId,
+          environment.useZRO,
+          adapterParamsToSource
+        )
+
+      const invalidERC721TokenAddress =
+        '0x2b5ad5c4795c026514f8317c7a215e218dccd6cf'
+
+      // execute send from using proxy contract
+      await expect(
+        environment.destinationONFT721.sendFrom(
+          sender.address,
+          environment.chainId,
+          sender.address,
+          invalidERC721TokenAddress,
+          tokenId,
+          sender.address,
+          environment.zroPaymentAddress,
+          adapterParamsToSource,
+          {
+            value: estimateToSource
+          }
+        )
+      ).to.be.revertedWith(message)
     })
   })
 })

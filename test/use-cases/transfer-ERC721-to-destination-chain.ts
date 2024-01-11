@@ -216,5 +216,101 @@ describe('UseCase: transfer ERC721 to destination chain', function () {
         )
       ).to.be.revertedWith('LzApp: destination chain is not a trusted source')
     })
+
+    it('should revert if try to transfer invalid ERC721 token', async function () {
+      const message = 'ProxyONFT721: invalid ERC721 token'
+
+      const environment = await createEnvironment()
+
+      await environment.proxyONFT721.setTrustedRemoteAddress(
+        environment.destinationChainId,
+        environment.destinationONFT721Address
+      )
+
+      await environment.destinationONFT721.setTrustedRemoteAddress(
+        environment.chainId,
+        environment.proxyONFT721Address
+      )
+
+      await environment.proxyONFT721.setMinDstGas(
+        environment.destinationChainId,
+        environment.packetType,
+        environment.minGasToTransferAndStoreRemote
+      )
+
+      await environment.destinationONFT721.setMinDstGas(
+        environment.chainId,
+        environment.packetType,
+        environment.minGasToTransferAndStoreRemote
+      )
+
+      await environment.LZEndpointMock.setDestLzEndpoint(
+        environment.destinationONFT721Address,
+        environment.destinationLZEndpointMockAddress
+      )
+
+      await environment.destionationLZEndpointMock.setDestLzEndpoint(
+        environment.proxyONFT721Address,
+        environment.LZEndpointMockAddress
+      )
+
+      const [sender] = await getSigners()
+
+      const minDstGas = await environment.proxyONFT721.minDstGasLookup(
+        environment.destinationChainId,
+        environment.packetType
+      )
+
+      const adapterParams = ethers.solidityPacked(
+        ['uint16', 'uint256'],
+        [environment.version, minDstGas]
+      )
+
+      const tokenId = 2
+
+      await environment.ERC721Mock.mint(sender.address, tokenId, '')
+
+      // estimate required gas to send
+      const [estimate] = await environment.proxyONFT721.estimateSendBatchFee(
+        environment.destinationChainId,
+        sender.address,
+        environment.ERC721MockAddress,
+        [tokenId],
+        environment.useZRO,
+        adapterParams
+      )
+
+      // approve ERC721 mock to proxy contract
+      await environment.ERC721Mock.approve(
+        environment.proxyONFT721Address,
+        tokenId
+      )
+
+      // set batch limit
+      await environment.proxyONFT721.setDstChainIdToBatchLimit(
+        environment.destinationChainId,
+        2
+      )
+
+      const invalidERC721TokenAddress =
+        '0x2b5ad5c4795c026514f8317c7a215e218dccd6cf'
+
+      // execute send from using proxy contract
+      await expect(
+        environment.proxyONFT721.sendBatchFrom(
+          sender.address,
+          environment.destinationChainId,
+          sender.address,
+          invalidERC721TokenAddress,
+          [tokenId],
+          sender.address,
+          environment.zroPaymentAddress,
+          adapterParams,
+          {
+            value: estimate
+          }
+        )
+      ).to.be.revertedWith(message)
+    })
   })
 })

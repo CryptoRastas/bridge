@@ -14,6 +14,29 @@ contract ONFT721 is ONFT721Core, ERC721, ERC721URIStorage, IONFT721 {
         address _lzEndpoint
     ) ERC721(_name, _symbol) ONFT721Core(_minGasToTransfer, _lzEndpoint) {}
 
+    function _send(
+        address _from,
+        uint16 _dstChainId,
+        bytes memory _toAddress,
+        address _ERC721Address,
+        uint[] memory _tokenIds,
+        address payable _refundAddress,
+        address _zroPaymentAddress,
+        bytes memory _adapterParams
+    ) internal virtual override {
+        require(_ERC721Address == address(this), "ONFT721: invalid ERC721 token");
+        super._send(
+            _from,
+            _dstChainId,
+            _toAddress,
+            _ERC721Address,
+            _tokenIds,
+            _refundAddress,
+            _zroPaymentAddress,
+            _adapterParams
+        );
+    }
+
     function supportsInterface(
         bytes4 interfaceId
     ) public view virtual override(ONFT721Core, ERC721, ERC721URIStorage, IERC165) returns (bool) {

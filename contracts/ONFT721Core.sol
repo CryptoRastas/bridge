@@ -147,6 +147,7 @@ abstract contract ONFT721Core is NonblockingLzApp, ERC165, ReentrancyGuard, IONF
             _debitFrom(_from, _dstChainId, _toAddress, _tokenIds[i]);
         }
 
+        /// @dev get token URI in this way to avoid user exploring chaging the value
         string[] memory tokenURIs = _getTokensURIs(_ERC721Address, _tokenIds);
 
         bytes memory payload = abi.encode(_toAddress, _tokenIds, tokenURIs);
