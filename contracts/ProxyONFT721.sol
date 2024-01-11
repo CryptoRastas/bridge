@@ -32,6 +32,7 @@ contract ProxyONFT721 is ONFT721Core, IERC721Receiver {
         address _zroPaymentAddress,
         bytes memory _adapterParams
     ) internal virtual override {
+        /// @dev check if token that is sending is same as proxied token
         require(_ERC721Address == address(token), "ProxyONFT721: invalid ERC721 token");
         super._send(
             _from,

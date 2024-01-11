@@ -83,7 +83,11 @@ task('deploy-ERC721-mock', 'deploy ERC721Mock contract')
         spinner.start()
         console.log('ℹ️ Minting: ', tokenId)
 
-        const tx2 = await ERC721.mint(receiver.address, tokenId, '0x')
+        const tx2 = await ERC721.mint(
+          receiver.address,
+          tokenId,
+          `https://api.cryptorastas.xyz/token/${tokenId}`
+        )
         const receipt2 = await tx2.wait()
         const gasUsed2 = receipt2?.gasUsed || 0n
 

@@ -24,6 +24,7 @@ contract ONFT721 is ONFT721Core, ERC721, ERC721URIStorage, IONFT721 {
         address _zroPaymentAddress,
         bytes memory _adapterParams
     ) internal virtual override {
+        /// @dev check if token that is sending is same as THIS token, since it has deployed itself as bridged token
         require(_ERC721Address == address(this), "ONFT721: invalid ERC721 token");
         super._send(
             _from,
