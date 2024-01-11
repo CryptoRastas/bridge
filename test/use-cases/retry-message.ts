@@ -7,7 +7,7 @@ import {
 import { ethers } from 'ethers'
 import coderUtils from '@/utils/coder'
 
-describe('UseCase: retry mnessage', function () {
+describe('UseCase: retry message', function () {
   let environment: Environment
   const fakeMinGasToTransferAndStoreRemote = 1n
 
@@ -56,6 +56,7 @@ describe('UseCase: retry mnessage', function () {
     const [estimate] = await environment.proxyONFT721.estimateSendFee(
       environment.destinationChainId,
       sender.address,
+      environment.ERC721MockAddress,
       tokenId,
       environment.useZRO,
       adapterParams
@@ -72,6 +73,7 @@ describe('UseCase: retry mnessage', function () {
       sender.address,
       environment.destinationChainId,
       sender.address,
+      environment.ERC721MockAddress,
       tokenId,
       sender.address,
       environment.zroPaymentAddress,
@@ -88,8 +90,8 @@ describe('UseCase: retry mnessage', function () {
     )
 
     const payload = coderUtils.coder.encode(
-      ['bytes', 'uint[]'],
-      [sender.address, [tokenId]]
+      ['bytes', 'uint[]', 'string[]'],
+      [sender.address, [tokenId], ['']]
     )
 
     // retry payload
@@ -125,6 +127,7 @@ describe('UseCase: retry mnessage', function () {
       const [estimate] = await environment.proxyONFT721.estimateSendFee(
         environment.destinationChainId,
         sender.address,
+        environment.ERC721MockAddress,
         tokenId,
         environment.useZRO,
         adapterParams
@@ -141,6 +144,7 @@ describe('UseCase: retry mnessage', function () {
         sender.address,
         environment.destinationChainId,
         sender.address,
+        environment.ERC721MockAddress,
         tokenId,
         sender.address,
         environment.zroPaymentAddress,

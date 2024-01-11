@@ -62,6 +62,7 @@ describe('UseCase: transfer ERC721 to destination chain', function () {
     const [estimate] = await environment.proxyONFT721.estimateSendBatchFee(
       environment.destinationChainId,
       sender.address,
+      environment.ERC721MockAddress,
       [tokenId, tokenId2],
       environment.useZRO,
       adapterParams
@@ -88,6 +89,7 @@ describe('UseCase: transfer ERC721 to destination chain', function () {
       sender.address,
       environment.destinationChainId,
       sender.address,
+      environment.ERC721MockAddress,
       [tokenId, tokenId2],
       sender.address,
       environment.zroPaymentAddress,
@@ -127,6 +129,7 @@ describe('UseCase: transfer ERC721 to destination chain', function () {
       const [estimate] = await environment.proxyONFT721.estimateSendFee(
         fakeChainId,
         sender.address,
+        environment.ERC721MockAddress,
         tokenId,
         environment.useZRO,
         adapterParams
@@ -144,6 +147,7 @@ describe('UseCase: transfer ERC721 to destination chain', function () {
           sender.address,
           fakeChainId,
           sender.address,
+          environment.ERC721MockAddress,
           tokenId,
           sender.address,
           environment.zroPaymentAddress,
@@ -183,6 +187,7 @@ describe('UseCase: transfer ERC721 to destination chain', function () {
       const [estimate] = await environment.proxyONFT721.estimateSendFee(
         environment.destinationChainId,
         sender.address,
+        environment.ERC721MockAddress,
         tokenId,
         environment.useZRO,
         adapterParams
@@ -200,6 +205,7 @@ describe('UseCase: transfer ERC721 to destination chain', function () {
           sender.address,
           environment.destinationChainId,
           sender.address,
+          environment.ERC721MockAddress,
           tokenId,
           sender.address,
           environment.zroPaymentAddress,

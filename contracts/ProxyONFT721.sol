@@ -34,7 +34,12 @@ contract ProxyONFT721 is ONFT721Core, IERC721Receiver {
     }
 
     /// @dev unlock NFT on source chain
-    function _creditTo(uint16, address _toAddress, uint _tokenId) internal virtual override {
+    function _creditTo(
+        uint16,
+        address _toAddress,
+        uint _tokenId,
+        string memory /**tokenURI */
+    ) internal virtual override {
         token.safeTransferFrom(address(this), _toAddress, _tokenId);
     }
 

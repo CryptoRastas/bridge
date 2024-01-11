@@ -42,6 +42,7 @@ interface IONFT721Core is IERC165 {
         address _from,
         uint16 _dstChainId,
         bytes calldata _toAddress,
+        address _ERC721Address,
         uint _tokenId,
         address payable _refundAddress,
         address _zroPaymentAddress,
@@ -58,6 +59,7 @@ interface IONFT721Core is IERC165 {
         address _from,
         uint16 _dstChainId,
         bytes calldata _toAddress,
+        address _ERC721Address,
         uint[] calldata _tokenIds,
         address payable _refundAddress,
         address _zroPaymentAddress,
@@ -75,6 +77,7 @@ interface IONFT721Core is IERC165 {
     function estimateSendFee(
         uint16 _dstChainId,
         bytes calldata _toAddress,
+        address _ERC721Address,
         uint _tokenId,
         bool _useZro,
         bytes calldata _adapterParams
@@ -91,6 +94,7 @@ interface IONFT721Core is IERC165 {
     function estimateSendBatchFee(
         uint16 _dstChainId,
         bytes calldata _toAddress,
+        address _ERC721Address,
         uint[] calldata _tokenIds,
         bool _useZro,
         bytes calldata _adapterParams

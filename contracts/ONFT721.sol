@@ -3,11 +3,10 @@ pragma solidity 0.8.21;
 
 import "./interfaces/IONFT721.sol";
 import "./ONFT721Core.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {ERC721URIStorage} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
-// NOTE: this ONFT contract has no public minting logic.
-// must implement your own minting logic in child classes
-contract ONFT721 is ONFT721Core, ERC721, IONFT721 {
+contract ONFT721 is ONFT721Core, ERC721, ERC721URIStorage, IONFT721 {
     constructor(
         string memory _name,
         string memory _symbol,
@@ -17,7 +16,7 @@ contract ONFT721 is ONFT721Core, ERC721, IONFT721 {
 
     function supportsInterface(
         bytes4 interfaceId
-    ) public view virtual override(ONFT721Core, ERC721, IERC165) returns (bool) {
+    ) public view virtual override(ONFT721Core, ERC721, ERC721URIStorage, IERC165) returns (bool) {
         return interfaceId == type(IONFT721).interfaceId || super.supportsInterface(interfaceId);
     }
 
@@ -27,12 +26,23 @@ contract ONFT721 is ONFT721Core, ERC721, IONFT721 {
         _transfer(_from, address(this), _tokenId);
     }
 
-    function _creditTo(uint16, address _toAddress, uint _tokenId) internal virtual override {
+    function tokenURI(
+        uint256 tokenId
+    ) public view override(ERC721, ERC721URIStorage, IERC721Metadata) returns (string memory) {
+        return super.tokenURI(tokenId);
+    }
+
+    function _creditTo(uint16, address _toAddress, uint _tokenId, string memory _tokenURI) internal virtual override {
         require(!_exists(_tokenId) || (_exists(_tokenId) && ERC721.ownerOf(_tokenId) == address(this)));
         if (!_exists(_tokenId)) {
             _safeMint(_toAddress, _tokenId);
+            _setTokenURI(_tokenId, _tokenURI);
         } else {
             _transfer(address(this), _toAddress, _tokenId);
         }
+    }
+
+    function _burn(uint256 tokenId) internal virtual override(ERC721, ERC721URIStorage) {
+        super._burn(tokenId);
     }
 }

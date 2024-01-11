@@ -5,6 +5,9 @@ import "./interfaces/IONFT721Core.sol";
 import "./NonblockingLzApp.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+
+import "hardhat/console.sol";
 
 abstract contract ONFT721Core is NonblockingLzApp, ERC165, ReentrancyGuard, IONFT721Core {
     uint16 public constant FUNCTION_TYPE_SEND = 1;
@@ -30,24 +33,52 @@ abstract contract ONFT721Core is NonblockingLzApp, ERC165, ReentrancyGuard, IONF
         return interfaceId == type(IONFT721Core).interfaceId || super.supportsInterface(interfaceId);
     }
 
+    function _getTokensURIs(
+        address _ERC721Address,
+        uint[] memory _tokenIds
+    ) internal view returns (string[] memory tokenURIs) {
+        /// @dev get contract instance once for gas optmisation
+        ERC721 ERC721Contract = ERC721(_ERC721Address);
+
+        /// @dev initialising the array with the correct length
+        tokenURIs = new string[](_tokenIds.length);
+
+        for (uint i = 0; i < _tokenIds.length; i++) {
+            tokenURIs[i] = ERC721Contract.tokenURI(_tokenIds[i]);
+        }
+    }
+
     function estimateSendFee(
         uint16 _dstChainId,
         bytes memory _toAddress,
+        address _ERC721Address,
         uint _tokenId,
         bool _useZro,
         bytes memory _adapterParams
     ) public view virtual override returns (uint nativeFee, uint zroFee) {
-        return estimateSendBatchFee(_dstChainId, _toAddress, _toSingletonArray(_tokenId), _useZro, _adapterParams);
+        return
+            estimateSendBatchFee(
+                _dstChainId,
+                _toAddress,
+                _ERC721Address,
+                _toSingletonArray(_tokenId),
+                _useZro,
+                _adapterParams
+            );
     }
 
     function estimateSendBatchFee(
         uint16 _dstChainId,
         bytes memory _toAddress,
+        address _ERC721Address,
         uint[] memory _tokenIds,
         bool _useZro,
         bytes memory _adapterParams
     ) public view virtual override returns (uint nativeFee, uint zroFee) {
-        bytes memory payload = abi.encode(_toAddress, _tokenIds);
+        string[] memory tokenURIs = _getTokensURIs(_ERC721Address, _tokenIds);
+
+        bytes memory payload = abi.encode(_toAddress, _tokenIds, tokenURIs);
+
         return lzEndpoint.estimateFees(_dstChainId, address(this), payload, _useZro, _adapterParams);
     }
 
@@ -55,6 +86,7 @@ abstract contract ONFT721Core is NonblockingLzApp, ERC165, ReentrancyGuard, IONF
         address _from,
         uint16 _dstChainId,
         bytes memory _toAddress,
+        address _ERC721Address,
         uint _tokenId,
         address payable _refundAddress,
         address _zroPaymentAddress,
@@ -64,6 +96,7 @@ abstract contract ONFT721Core is NonblockingLzApp, ERC165, ReentrancyGuard, IONF
             _from,
             _dstChainId,
             _toAddress,
+            _ERC721Address,
             _toSingletonArray(_tokenId),
             _refundAddress,
             _zroPaymentAddress,
@@ -75,18 +108,29 @@ abstract contract ONFT721Core is NonblockingLzApp, ERC165, ReentrancyGuard, IONF
         address _from,
         uint16 _dstChainId,
         bytes memory _toAddress,
+        address _ERC721Address,
         uint[] memory _tokenIds,
         address payable _refundAddress,
         address _zroPaymentAddress,
         bytes memory _adapterParams
     ) public payable virtual override {
-        _send(_from, _dstChainId, _toAddress, _tokenIds, _refundAddress, _zroPaymentAddress, _adapterParams);
+        _send(
+            _from,
+            _dstChainId,
+            _toAddress,
+            _ERC721Address,
+            _tokenIds,
+            _refundAddress,
+            _zroPaymentAddress,
+            _adapterParams
+        );
     }
 
     function _send(
         address _from,
         uint16 _dstChainId,
         bytes memory _toAddress,
+        address _ERC721Address,
         uint[] memory _tokenIds,
         address payable _refundAddress,
         address _zroPaymentAddress,
@@ -103,7 +147,9 @@ abstract contract ONFT721Core is NonblockingLzApp, ERC165, ReentrancyGuard, IONF
             _debitFrom(_from, _dstChainId, _toAddress, _tokenIds[i]);
         }
 
-        bytes memory payload = abi.encode(_toAddress, _tokenIds);
+        string[] memory tokenURIs = _getTokensURIs(_ERC721Address, _tokenIds);
+
+        bytes memory payload = abi.encode(_toAddress, _tokenIds, tokenURIs);
 
         _checkGasLimit(
             _dstChainId,
@@ -111,6 +157,7 @@ abstract contract ONFT721Core is NonblockingLzApp, ERC165, ReentrancyGuard, IONF
             _adapterParams,
             dstChainIdToTransferGas[_dstChainId] * _tokenIds.length
         );
+
         _lzSend(_dstChainId, payload, _refundAddress, _zroPaymentAddress, _adapterParams, msg.value);
         emit SendToChain(_dstChainId, _from, _toAddress, _tokenIds);
     }
@@ -122,7 +169,10 @@ abstract contract ONFT721Core is NonblockingLzApp, ERC165, ReentrancyGuard, IONF
         bytes memory _payload
     ) internal virtual override {
         // decode and load the toAddress
-        (bytes memory toAddressBytes, uint[] memory tokenIds) = abi.decode(_payload, (bytes, uint[]));
+        (bytes memory toAddressBytes, uint[] memory tokenIds, string[] memory tokenURIs) = abi.decode(
+            _payload,
+            (bytes, uint[], string[])
+        );
 
         address toAddress;
         assembly {
@@ -131,7 +181,7 @@ abstract contract ONFT721Core is NonblockingLzApp, ERC165, ReentrancyGuard, IONF
 
         /// @dev if it returns zero, NFT won't be minted to the receiver, but the payload will be stored
         ///      and can be cleared later by anyone with enough gas
-        uint nextIndex = _creditTill(_srcChainId, toAddress, 0, tokenIds);
+        uint nextIndex = _creditTill(_srcChainId, toAddress, 0, tokenIds, tokenURIs);
 
         if (nextIndex < tokenIds.length) {
             // not enough gas to complete transfers, store to be cleared in another tx
@@ -148,13 +198,14 @@ abstract contract ONFT721Core is NonblockingLzApp, ERC165, ReentrancyGuard, IONF
         bytes32 hashedPayload = keccak256(_payload);
         require(storedCredits[hashedPayload].creditsRemain, "no credits stored");
 
-        (, uint[] memory tokenIds) = abi.decode(_payload, (bytes, uint[]));
+        (, uint[] memory tokenIds, string[] memory tokenURIs) = abi.decode(_payload, (bytes, uint[], string[]));
 
         uint nextIndex = _creditTill(
             storedCredits[hashedPayload].srcChainId,
             storedCredits[hashedPayload].toAddress,
             storedCredits[hashedPayload].index,
-            tokenIds
+            tokenIds,
+            tokenURIs
         );
 
         require(nextIndex > storedCredits[hashedPayload].index, "not enough gas to process credit transfer");
@@ -180,14 +231,15 @@ abstract contract ONFT721Core is NonblockingLzApp, ERC165, ReentrancyGuard, IONF
         uint16 _srcChainId,
         address _toAddress,
         uint _startIndex,
-        uint[] memory _tokenIds
+        uint[] memory _tokenIds,
+        string[] memory _tokenURIs
     ) internal returns (uint) {
         uint i = _startIndex;
         while (i < _tokenIds.length) {
             // if not enough gas to process, store this index for next loop
             if (gasleft() < minGasToTransferAndStore) break;
 
-            _creditTo(_srcChainId, _toAddress, _tokenIds[i]);
+            _creditTo(_srcChainId, _toAddress, _tokenIds[i], _tokenURIs[i]);
             i++;
         }
 
@@ -219,7 +271,7 @@ abstract contract ONFT721Core is NonblockingLzApp, ERC165, ReentrancyGuard, IONF
 
     function _debitFrom(address _from, uint16 _dstChainId, bytes memory _toAddress, uint _tokenId) internal virtual;
 
-    function _creditTo(uint16 _srcChainId, address _toAddress, uint _tokenId) internal virtual;
+    function _creditTo(uint16 _srcChainId, address _toAddress, uint _tokenId, string memory tokenURI) internal virtual;
 
     function _toSingletonArray(uint element) internal pure returns (uint[] memory) {
         uint[] memory array = new uint[](1);

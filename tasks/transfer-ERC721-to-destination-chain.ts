@@ -1,3 +1,4 @@
+import { ProxyONFT721, ONFT721 } from '@/typechain'
 import { task, types } from 'hardhat/config'
 import { Spinner } from '../scripts/spinner'
 import cliSpinner from 'cli-spinners'
@@ -12,7 +13,6 @@ export type DeployTemplateTask = {
   coreContractAddress: string
   destinationChainId: number
   packetType?: number
-  isProxy?: boolean
 }
 
 task(
@@ -21,7 +21,6 @@ task(
 )
   .addParam('tokenAddress', 'Token address')
   .addOptionalParam('packetType', 'Packet type', undefined, types.int)
-  .addOptionalParam('isProxy', 'Is proxy', true, types.boolean)
   .addParam('tokenId', 'Token id')
   .addParam('coreContractAddress', 'Core contract address')
   .addParam('destinationChainId', 'Destination chain id')
@@ -39,8 +38,7 @@ task(
         tokenId,
         coreContractAddress,
         destinationChainId,
-        packetType,
-        isProxy
+        packetType
       }: DeployTemplateTask,
       hre
     ) => {
@@ -76,7 +74,7 @@ task(
         const [sender] = await hre.ethers.getSigners()
 
         const ONFT721Core = await hre.ethers.getContractAt(
-          isProxy ? 'ProxyONFT721' : 'ONFT721Core',
+          'ONFT721Core',
           coreContractAddress,
           deployer
         )
@@ -89,7 +87,7 @@ task(
 
         spinner.start()
         console.log(
-          `ℹ️ Estimating gas to transfer ERC721 to ${destinationChainConfig.name}`
+          `ℹ️ Estimating gas required to transfer to ${destinationChainConfig.name}`
         )
 
         const minDstGas = await ONFT721Core.minDstGasLookup(
@@ -109,6 +107,7 @@ task(
         const [estimate] = await ONFT721Core.estimateSendFee(
           destinationChainConfig.abstractId,
           sender.address,
+          tokenAddress,
           tokenId,
           useZRO,
           adapterParams
@@ -151,11 +150,7 @@ task(
          */
 
         spinner.start()
-        console.log(
-          `ℹ️ Bridging ERC721 to ${destinationChainConfig.name} using ${
-            isProxy ? 'Proxy' : ''
-          }ONFT721${isProxy ? '' : 'Core'}`
-        )
+        console.log(`ℹ️ Bridging to ${destinationChainConfig.name} `)
 
         const zroPaymentAddress = hre.ethers.ZeroAddress
 
@@ -163,6 +158,7 @@ task(
           sender.address,
           destinationChainConfig.abstractId,
           sender.address,
+          tokenAddress,
           tokenId,
           sender.address,
           zroPaymentAddress,
@@ -179,11 +175,11 @@ task(
         console.log('ℹ️ Gas used: ', gasUsed2)
 
         console.log(
-          `✅ ERC721 has been transfered to chain ${destinationChainConfig.name} to ${sender.address}`
+          `✅ ERC721 has been transfered to chain ${destinationChainConfig.name} to ${sender.address} successfully`
         )
       } catch (error) {
         spinner.stop()
-        console.log(`❌ `)
+        console.log(`❌ Transfer failed`)
         console.log(error)
       }
     }
