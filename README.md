@@ -108,7 +108,7 @@ Set destination chain min gas required to perform actions on chain:
 | `--account-index`         | Account index to deploy from                 | `0`                       |
 | `--core-contract-address` | Core Contract address                        | [Address]                 |
 | `--destination-chain-id`  | Destination chain id                         | [ChainId]                 |
-| `--min-gas-to-transfer`   | Min gas required to perform actions on chain | [check](config/chains.ts) |
+| `--min-destination-gas`   | Min gas required to perform actions on chain | [check](config/chains.ts) |
 | `--packet-type`           | Packet type                                  | `1` (send and call)       |
 
 ```bash
