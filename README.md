@@ -38,7 +38,7 @@ pnpm test:coverage
 ## Deploying ERC721Mock (test only)
 
 ```bash
-pnpm hardhat deploy-ERC721-mock --network 11155111 --token-name CryptoRastas --token-symbol RASTAS
+pnpm hardhat deploy-ERC721-mock --network 11155111 --token-name CryptoRastas222 --token-symbol RASTAS222
 ```
 
 | Argument          | Description                  | Default        |
@@ -51,7 +51,7 @@ pnpm hardhat deploy-ERC721-mock --network 11155111 --token-name CryptoRastas --t
 
 Deploy ProxyONFT721 on source chain:
 
-| Argument                | Description                                  | Default                   |
+| Argument **\*\*\*\***   | Description                                  | Default                   |
 | ----------------------- | -------------------------------------------- | ------------------------- |
 | `--proxy-token`         | Proxy token address                          | [Address]                 |
 | `--min-gas-to-transfer` | Min gas required to perform actions on chain | [check](config/chains.ts) |
@@ -59,7 +59,7 @@ Deploy ProxyONFT721 on source chain:
 | `--account-index`       | Account index to deploy from                 | `0`                       |
 
 ```bash
-pnpm hardhat deploy-proxy-ONFT721 --network 11155111 --proxy-token 0xEa1bE678525726C050aE363D6561110567c6A005
+pnpm hardhat deploy-proxy-ONFT721 --network 1 --proxy-token 0x07cd221b2fe54094277a2f4e1c1bc6df14e63678
 ```
 
 and deploy ONFT721 on destination chain:
@@ -73,7 +73,7 @@ and deploy ONFT721 on destination chain:
 | `--lz-endpoint`         | L2 endpoint                                  | [check](config/chains.ts) |
 
 ```bash
-pnpm hardhat deploy-ONFT721 --network 80001 --name CryptoRastas --symbol RASTAS
+pnpm hardhat deploy-ONFT721 --network 137 --name Cryptorastas --symbol RASTA
 ```
 
 ## Step 2 - Setting up the bridge
@@ -90,13 +90,13 @@ Set destination chain as trusted remote address on source chain:
 | `--destination-core-contract-address` | ONFT721 from destination chain | [Address] |
 
 ```bash
-pnpm hardhat set-trusted-remote-address --network 11155111 --core-contract-address 0x08d6474eb92E8c4Df03E4223e0ec8d50f743c75f --destination-chain-id 80001 --destination-core-contract-address 0x357F0dc00AdE231db59aE38aCd8A0E73ed0125Ff
+pnpm hardhat set-trusted-remote-address --network 1 --core-contract-address 0xfD691DCf0Cd713986F9218F3dc7aEb5f2b9e7480 --destination-chain-id 137 --destination-core-contract-address 0xfD691DCf0Cd713986F9218F3dc7aEb5f2b9e7480
 ```
 
 repeat the process on the destination chain, to trust the source chain:
 
 ```bash
-pnpm hardhat set-trusted-remote-address --network 80001 --core-contract-address 0x357F0dc00AdE231db59aE38aCd8A0E73ed0125Ff --destination-chain-id 11155111 --destination-core-contract-address 0x08d6474eb92E8c4Df03E4223e0ec8d50f743c75f
+pnpm hardhat set-trusted-remote-address --network 137 --core-contract-address 0xfD691DCf0Cd713986F9218F3dc7aEb5f2b9e7480 --destination-chain-id 1 --destination-core-contract-address 0xfD691DCf0Cd713986F9218F3dc7aEb5f2b9e7480
 ```
 
 ### Setting min gas required
@@ -112,13 +112,13 @@ Set destination chain min gas required to perform actions on chain:
 | `--packet-type`           | Packet type                                  | `1` (send and call)       |
 
 ```bash
-pnpm hardhat set-min-destination-gas --network 11155111 --core-contract-address 0x08d6474eb92E8c4Df03E4223e0ec8d50f743c75f --destination-chain-id 80001
+pnpm hardhat set-min-destination-gas --network 1 --core-contract-address 0xfD691DCf0Cd713986F9218F3dc7aEb5f2b9e7480 --destination-chain-id 137
 ```
 
 repeat the process on the destination chain, to set min gas required to perform actions on chain:
 
 ```bash
-pnpm hardhat set-min-destination-gas --network 80001 --core-contract-address 0x357F0dc00AdE231db59aE38aCd8A0E73ed0125Ff --destination-chain-id 11155111
+pnpm hardhat set-min-destination-gas --network 137 --core-contract-address 0x70eA4B0098286Aa89484ce829357A8F2644Ad802 --destination-chain-id 1
 ```
 
 ## Step 3 - Transfer ERC721
@@ -135,13 +135,13 @@ Transfer ERC721 to destination chain
 | `--packet-type`           | Packet type                  | `1` (send and call) |
 
 ```bash
-pnpm hardhat transfer-ERC721-to-destination-chain --network 11155111 --core-contract-address 0x08d6474eb92E8c4Df03E4223e0ec8d50f743c75f --destination-chain-id 80001 --token-address 0xEa1bE678525726C050aE363D6561110567c6A005 --token-id 1
+pnpm hardhat transfer-ERC721-to-destination-chain --network 1 --core-contract-address 0xfD691DCf0Cd713986F9218F3dc7aEb5f2b9e7480 --destination-chain-id 137 --token-address 0xfD691DCf0Cd713986F9218F3dc7aEb5f2b9e7480 --token-id 1
 ```
 
 optionally you can transfer back to initial chain
 
 ```bash
-pnpm hardhat transfer-ERC721-to-destination-chain --network 80001 --core-contract-address 0x357F0dc00AdE231db59aE38aCd8A0E73ed0125Ff --destination-chain-id 11155111 --token-address 0x357F0dc00AdE231db59aE38aCd8A0E73ed0125Ff --token-id 1
+pnpm hardhat transfer-ERC721-to-destination-chain --network 137 --core-contract-address 0xfD691DCf0Cd713986F9218F3dc7aEb5f2b9e7480 --destination-chain-id 1 --token-address 0xfD691DCf0Cd713986F9218F3dc7aEb5f2b9e7480 --token-id 1
 ```
 
 ## Step 4 - Verifing contracts

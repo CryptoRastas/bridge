@@ -56,12 +56,12 @@ const config: HardhatUserConfig = {
   },
   gasReporter: {
     currency: 'USD',
-    gasPrice: 5,
+    gasPrice: 1,
     enabled: process.env.RUN_GAS_REPORTER === 'true'
   },
   etherscan: {
     apiKey: {
-      ethereum: process.env.ETHERSCAN_API_KEY!,
+      mainnet: process.env.ETHERSCAN_API_KEY!,
       sepolia: process.env.SEPOLIA_API_KEY!,
       polygon: process.env.POLYGON_API_KEY!,
       polygonMumbai: process.env.POLYGON_MUMBAI_API_KEY!
