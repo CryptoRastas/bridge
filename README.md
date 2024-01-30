@@ -118,7 +118,7 @@ pnpm hardhat set-min-destination-gas --network 1 --core-contract-address 0xfD691
 repeat the process on the destination chain, to set min gas required to perform actions on chain:
 
 ```bash
-pnpm hardhat set-min-destination-gas --network 137 --core-contract-address 0x70eA4B0098286Aa89484ce829357A8F2644Ad802 --destination-chain-id 1
+pnpm hardhat set-min-destination-gas --network 137 --core-contract-address 0xfD691DCf0Cd713986F9218F3dc7aEb5f2b9e7480 --destination-chain-id 1
 ```
 
 ## Step 3 - Transfer ERC721
@@ -135,7 +135,7 @@ Transfer ERC721 to destination chain
 | `--packet-type`           | Packet type                  | `1` (send and call) |
 
 ```bash
-pnpm hardhat transfer-ERC721-to-destination-chain --network 1 --core-contract-address 0xfD691DCf0Cd713986F9218F3dc7aEb5f2b9e7480 --destination-chain-id 137 --token-address 0xfD691DCf0Cd713986F9218F3dc7aEb5f2b9e7480 --token-id 1
+pnpm hardhat transfer-ERC721-to-destination-chain --network 1 --core-contract-address 0xfD691DCf0Cd713986F9218F3dc7aEb5f2b9e7480 --destination-chain-id 137 --token-address 0x07cd221b2fe54094277a2f4e1c1bc6df14e63678 --token-id 1
 ```
 
 optionally you can transfer back to initial chain
