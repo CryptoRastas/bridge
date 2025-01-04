@@ -17,7 +17,6 @@ import { NetworksUserConfig } from 'hardhat/types'
 
 const config: HardhatUserConfig = {
   defaultNetwork: 'hardhat',
-
   networks:
     process.env.NODE_ENV !== 'development'
       ? reduce(
@@ -64,7 +63,9 @@ const config: HardhatUserConfig = {
       mainnet: process.env.ETHERSCAN_API_KEY!,
       sepolia: process.env.SEPOLIA_API_KEY!,
       polygon: process.env.POLYGON_API_KEY!,
-      polygonMumbai: process.env.POLYGON_MUMBAI_API_KEY!
+      polygonAmoy: process.env.POLYGON_AMOY_API_KEY!,
+      base: process.env.BASE_API_KEY!,
+      baseSepolia: process.env.BASE_SEPOLIA_API_KEY!
     }
   }
 }

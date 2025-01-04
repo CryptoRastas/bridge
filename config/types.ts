@@ -1,37 +1,17 @@
-export interface NativeCurrency {
-  decimals: number
-  name: string
-  symbol: string
-}
+import { ChainContract, Chain as IChain } from 'viem'
 
-export interface Chain {
-  id: number
+export type AvailableChainContracts = 'lzEndpoint'
+
+export type Chain = IChain & {
   abstractId: number
-  gasPrice?: number
-  name: string
   network: string
   accounts: string[]
-  nativeCurrency: NativeCurrency
-  rpcUrls: {
-    [key: string]: {
-      http: string[]
-    }
-  }
-  blockExplorers: {
-    [key: string]: {
-      name: string
-      url: string
-    }
-  }
   contracts: {
-    [key: string]: {
-      address: string
-      blockCreated?: number
-    }
+    [k in AvailableChainContracts]: ChainContract
   }
-  testnet?: boolean
-  /// @dev min gas limit
   minGasToTransferAndStoreRemote: bigint
   /// @dev gas amount required to transfer and store NFT
   minGasToTransferAndStoreLocal: bigint
 }
+
+export type ChainContracts = Chain['contracts']

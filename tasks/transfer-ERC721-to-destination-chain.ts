@@ -1,4 +1,3 @@
-import { ProxyONFT721, ONFT721 } from '@/typechain'
 import { task, types } from 'hardhat/config'
 import { Spinner } from '../scripts/spinner'
 import cliSpinner from 'cli-spinners'

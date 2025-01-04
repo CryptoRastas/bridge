@@ -6,11 +6,15 @@
 
 - Ethereum
 - Polygon
+- Base
+- Abstract (pending)
 
 #### Testnet
 
-- Mumbai
+- Amoy
 - Sepolia
+- Base Sepolia
+- Abstract Testnet
 
 ## Getting Started
 
