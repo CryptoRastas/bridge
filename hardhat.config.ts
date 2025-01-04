@@ -66,7 +66,9 @@ const config: HardhatUserConfig = {
       polygon: process.env.POLYGON_API_KEY!,
       polygonAmoy: process.env.POLYGON_AMOY_API_KEY!,
       base: process.env.BASE_API_KEY!,
-      baseSepolia: process.env.BASE_SEPOLIA_API_KEY!
+      baseSepolia: process.env.BASE_SEPOLIA_API_KEY!,
+      abstract: process.env.ABSTRACT_API_KEY!,
+      abstractTestnet: process.env.ABSTRACT_TESTNET_API_KEY!
     }
   }
 }

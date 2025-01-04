@@ -24,13 +24,6 @@ pnpm typechain
 pnpm node
 ```
 
-## Available scrips by `dlx hardhat`
-
-```shell
-dlx hardhat help
-REPORT_GAS=true dlx hardhat test
-```
-
 ## Testing
 
 ```bash
@@ -39,7 +32,7 @@ pnpm test:watch
 pnpm test:coverage
 ```
 
-## Deploying ERC721Mock (test only)
+## Deploying ERC721Mock (optional testnet only)
 
 ```bash
 pnpm hardhat deploy-ERC721-mock --network 11155111 --token-name CryptoRastas222 --token-symbol RASTAS222
@@ -55,9 +48,9 @@ pnpm hardhat deploy-ERC721-mock --network 11155111 --token-name CryptoRastas222 
 
 Deploy ProxyONFT721 on source chain:
 
-| Argument **\*\*\*\***   | Description                                  | Default                   |
+| Argument                | Description                                  | Default                   |
 | ----------------------- | -------------------------------------------- | ------------------------- |
-| `--proxy-token`         | Proxy token address                          | [Address]                 |
+| `--proxy-token`         | Proxy token address (token to be proxied)    | [Address]                 |
 | `--min-gas-to-transfer` | Min gas required to perform actions on chain | [check](config/chains.ts) |
 | `--lz-endpoint`         | L2 endpoint                                  | [check](config/chains.ts) |
 | `--account-index`       | Account index to deploy from                 | `0`                       |

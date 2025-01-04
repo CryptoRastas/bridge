@@ -27,6 +27,7 @@ task('deploy-ONFT721', 'deploy ONFT721 contract')
     types.int
   )
   .addOptionalParam('lzEndpoint', 'Lazynft endpoint', undefined, types.string)
+  /// @todo: add token- prefix (eg: token-name)
   .addParam('name', 'Token name')
   .addParam('symbol', 'Token symbol')
   .setAction(

@@ -89,6 +89,7 @@ task(
           `ℹ️ Estimating gas required to transfer to ${destinationChainConfig.name}`
         )
 
+        /// 260_000
         const minDstGas = await ONFT721Core.minDstGasLookup(
           destinationChainConfig.abstractId,
           packetType || 1n
