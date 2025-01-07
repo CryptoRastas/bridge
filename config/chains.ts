@@ -68,6 +68,7 @@ export const sepolia: Chain = merge(sepoliaChain, {
   minGasToTransferAndStoreLocal: 100_000n
 })
 
+/// @dev: todo deploy
 export const polygonAmoy: Chain = merge(polygonAmoyChain, {
   abstractId: 10267,
   network: 'matic-amoy',
@@ -94,6 +95,7 @@ export const baseSepolia: Chain = merge(baseSepoliaChain, {
   minGasToTransferAndStoreLocal: 100_000n
 })
 
+//@dev: todo deploy (also mainnet)
 export const abstractTestnet: Chain = merge(abstractTestnetChain, {
   abstractId: 10313,
   network: 'abstract-testnet',
