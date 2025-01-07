@@ -1,8 +1,8 @@
 import { reduce } from 'lodash'
-import { ethereum, sepolia, polygon, polygonMumbai } from './chains'
+import { ethereum, sepolia, polygon, polygonAmoy, base, baseSepolia, abstractTestnet } from './chains'
 import { Chain } from './types'
 
-export const allowedChains = [ethereum, sepolia, polygon, polygonMumbai]
+export const allowedChains = [ethereum, sepolia, polygon, polygonAmoy, base, baseSepolia, abstractTestnet]
 
 export const allowedChainsConfig = reduce(
   allowedChains,

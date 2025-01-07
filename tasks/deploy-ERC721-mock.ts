@@ -28,17 +28,18 @@ task('deploy-ERC721-mock', 'deploy ERC721Mock contract')
       spinner.start()
 
       try {
-        const chainConfig = allowedChainsConfig[+hre.network.name]
-
-        if (!chainConfig.testnet) {
-          console.log(
-            `⚠️  ${chainConfig.name} is not a testnet, please use only for testing purposes!`
-          )
-        }
+        /// @dev: hre.network?.name means the chain id used in hardhat config networks
+        const chainConfig = allowedChainsConfig[Number(hre.network?.name)]
 
         if (!chainConfig) {
           spinner.stop()
           throw new Error('Chain config not found')
+        }
+
+        if (!chainConfig?.testnet) {
+          console.log(
+            `⚠️  ${chainConfig.name} is not a testnet, please use only for testing purposes!`
+          )
         }
 
         const provider = new hre.ethers.JsonRpcProvider(
@@ -102,3 +103,35 @@ task('deploy-ERC721-mock', 'deploy ERC721Mock contract')
       }
     }
   )
+
+// # SEPOLIA
+
+// NFT (token):
+// 0x9B4d191e71138e100b3e0345cF4365060e3bBD01
+
+// ProxyONFT721
+// 0x65d8EDec76C83AC87d0E852Fd170B22A76dee3cF
+
+// # BASE SEPOLIA
+// ONFT721
+// 0x26711d5868f0f2e233b0e226D961E2172e3106Fc
+
+// pnpm hardhat set-trusted-remote-address
+// --network 11155111
+// --core-contract-address 0x65d8EDec76C83AC87d0E852Fd170B22A76dee3cF
+// --destination-chain-id 84532
+// --destination-core-contract-address 0x26711d5868f0f2e233b0e226D961E2172e3106Fc
+
+// pnpm hardhat set-trusted-remote-address
+// --network 84532
+// --core-contract-address 0x26711d5868f0f2e233b0e226D961E2172e3106Fc
+// --destination-chain-id 11155111
+// --destination-core-contract-address 0x65d8EDec76C83AC87d0E852Fd170B22A76dee3cF
+
+// pnpm hardhat set-min-destination-gas --network 11155111 --core-contract-address 0x65d8EDec76C83AC87d0E852Fd170B22A76dee3cF --destination-chain-id 84532
+
+// pnpm hardhat set-min-destination-gas --network 84532 --core-contract-address 0x26711d5868f0f2e233b0e226D961E2172e3106Fc --destination-chain-id 11155111
+
+// pnpm hardhat transfer-ERC721-to-destination-chain --network 11155111 --core-contract-address 0x65d8EDec76C83AC87d0E852Fd170B22A76dee3cF --destination-chain-id 84532 --token-address 0x9B4d191e71138e100b3e0345cF4365060e3bBD01 --token-id 1
+
+// pnpm hardhat transfer-ERC721-to-destination-chain --network 84532 --core-contract-address 0x26711d5868f0f2e233b0e226D961E2172e3106Fc --token-address 0x26711d5868f0f2e233b0e226D961E2172e3106Fc --token-id 1 --destination-chain-id 11155111

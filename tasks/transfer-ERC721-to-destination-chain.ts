@@ -1,4 +1,3 @@
-import { ProxyONFT721, ONFT721 } from '@/typechain'
 import { task, types } from 'hardhat/config'
 import { Spinner } from '../scripts/spinner'
 import cliSpinner from 'cli-spinners'
@@ -90,6 +89,7 @@ task(
           `ℹ️ Estimating gas required to transfer to ${destinationChainConfig.name}`
         )
 
+        /// 260_000
         const minDstGas = await ONFT721Core.minDstGasLookup(
           destinationChainConfig.abstractId,
           packetType || 1n

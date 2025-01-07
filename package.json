@@ -52,6 +52,7 @@
     "@layerzerolabs/solidity-examples": "^1.0.0",
     "@openzeppelin/contracts": "^4.9.5",
     "cli-spinners": "^2.9.2",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "viem": "^2.22.2"
   }
 }
