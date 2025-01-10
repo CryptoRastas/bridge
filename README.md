@@ -148,3 +148,7 @@ Run this command to verify contracts on selected network
 ```bash
 pnpm verify --network [networkid] --contract contracts/[ContractName].sol:[Contract] [contractAddress] [arguments]
 ```
+
+## Step 5 - Set min destination batch limit
+normally it should be set to 3 as the maximum dapp accepts
+todo
