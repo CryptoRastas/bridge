@@ -7,7 +7,7 @@
 - Ethereum
 - Polygon
 - Base
-- Abstract (not deployed)
+- Abstract
 
 #### Testnet
 
@@ -117,6 +117,12 @@ repeat the process on the destination chain, to set min gas required to perform 
 
 ```bash
 pnpm hardhat set-min-destination-gas --network 137 --core-contract-address 0xfD691DCf0Cd713986F9218F3dc7aEb5f2b9e7480 --destination-chain-id 1
+```
+
+### Setting min allowed tokens to batch transfer
+
+```bash
+Access using block explorer and call the action manually in the contract write section "setDstChainIdToBatchLimit"
 ```
 
 ## Step 3 - Transfer ERC721
