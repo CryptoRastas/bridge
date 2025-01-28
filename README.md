@@ -1,8 +1,9 @@
 # CryptoRastas - NFT Bridge
 
-### Note
+### ToDos
 
-For **Abstract** chain, there's still missing implementation of set min destination gas and set trusted remote scripts for zksync.
+1. For **Abstract** chain, there's still missing implementation of set min destination gas and set trusted remote scripts for zksync.
+2. Implementing script for set min batch limit for transfering tokens
 
 ### Available chains
 
