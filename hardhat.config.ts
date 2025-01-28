@@ -82,25 +82,25 @@ const config: HardhatUserConfig = {
       baseSepolia: process.env.BASE_SEPOLIA_API_KEY!,
       abstractMainnet: process.env.ABSTRACT_API_KEY!,
       abstractTestnet: process.env.ABSTRACT_TESTNET_API_KEY!
-    }
-    // customChains: [
-    //   {
-    //     network: 'abstractTestnet',
-    //     chainId: 11124,
-    //     urls: {
-    //       apiURL: 'https://api-sepolia.abscan.org/api',
-    //       browserURL: 'https://sepolia.abscan.org/'
-    //     }
-    //   },
-    //   {
-    //     network: 'abstractMainnet',
-    //     chainId: 2741,
-    //     urls: {
-    //       apiURL: 'https://api.abscan.org/api',
-    //       browserURL: 'https://abscan.org/'
-    //     }
-    //   }
-    // ]
+    },
+    customChains: [
+      {
+        network: 'abstractTestnet',
+        chainId: 11124,
+        urls: {
+          apiURL: 'https://api-sepolia.abscan.org/api',
+          browserURL: 'https://sepolia.abscan.org/'
+        }
+      },
+      {
+        network: 'abstractMainnet',
+        chainId: 2741,
+        urls: {
+          apiURL: 'https://api.abscan.org/api',
+          browserURL: 'https://abscan.org/'
+        }
+      }
+    ]
   }
 }
 
