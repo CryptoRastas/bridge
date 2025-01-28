@@ -1,11 +1,15 @@
 import dotenv from 'dotenv'
+
 dotenv.config()
 
 import { HardhatUserConfig } from 'hardhat/config'
 
 import '@nomicfoundation/hardhat-verify'
 import '@nomicfoundation/hardhat-toolbox'
+
 import '@nomiclabs/hardhat-solhint'
+import '@matterlabs/hardhat-zksync'
+
 import 'hardhat-gas-reporter'
 import 'tsconfig-paths/register'
 import './tasks'
@@ -17,6 +21,13 @@ import { NetworksUserConfig } from 'hardhat/types'
 
 const config: HardhatUserConfig = {
   defaultNetwork: 'hardhat',
+  zksolc: {
+    version: '1.5.7', // Ensure version is 1.5.7!
+    settings: {
+      // Note: This must be true to call NonceHolder & ContractDeployer system contracts
+      enableEraVMExtensions: false
+    }
+  },
   networks:
     process.env.NODE_ENV !== 'development'
       ? reduce(
@@ -27,7 +38,9 @@ const config: HardhatUserConfig = {
               accounts: chain.accounts,
               /// @todo: check why its necessary
               // gasPrice: chain.gasPrice,
-              gasMultiplier: 1.2
+              gasMultiplier: 1.2,
+              zksync: chain.zksync,
+              ethNetwork: chain.ethNetwork
             }
 
             return acc
@@ -67,9 +80,27 @@ const config: HardhatUserConfig = {
       polygonAmoy: process.env.POLYGON_AMOY_API_KEY!,
       base: process.env.BASE_API_KEY!,
       baseSepolia: process.env.BASE_SEPOLIA_API_KEY!,
-      abstract: process.env.ABSTRACT_API_KEY!,
+      abstractMainnet: process.env.ABSTRACT_API_KEY!,
       abstractTestnet: process.env.ABSTRACT_TESTNET_API_KEY!
-    }
+    },
+    customChains: [
+      {
+        network: 'abstractTestnet',
+        chainId: 11124,
+        urls: {
+          apiURL: 'https://api-sepolia.abscan.org/api',
+          browserURL: 'https://sepolia.abscan.org/'
+        }
+      },
+      {
+        network: 'abstractMainnet',
+        chainId: 2741,
+        urls: {
+          apiURL: 'https://api.abscan.org/api',
+          browserURL: 'https://abscan.org/'
+        }
+      }
+    ]
   }
 }
 

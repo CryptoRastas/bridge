@@ -1,5 +1,10 @@
 # CryptoRastas - NFT Bridge
 
+### ToDos
+
+1. For **Abstract** chain, there's still missing implementation of set min destination gas and set trusted remote scripts for zksync.
+2. Implementing script for set min batch limit for transfering tokens
+
 ### Available chains
 
 #### Mainnet
@@ -7,14 +12,14 @@
 - Ethereum
 - Polygon
 - Base
-- Abstract (pending)
+- Abstract
 
 #### Testnet
 
-- Amoy
+- Amoy (not deployed)
 - Sepolia
 - Base Sepolia
-- Abstract Testnet
+- Abstract Testnet (not deployed)
 
 ## Getting Started
 
@@ -118,6 +123,12 @@ repeat the process on the destination chain, to set min gas required to perform 
 pnpm hardhat set-min-destination-gas --network 137 --core-contract-address 0xfD691DCf0Cd713986F9218F3dc7aEb5f2b9e7480 --destination-chain-id 1
 ```
 
+### Setting min allowed tokens to batch transfer
+
+```bash
+Access using block explorer and call the action manually in the contract write section "setDstChainIdToBatchLimit"
+```
+
 ## Step 3 - Transfer ERC721
 
 Transfer ERC721 to destination chain
@@ -150,5 +161,6 @@ pnpm verify --network [networkid] --contract contracts/[ContractName].sol:[Contr
 ```
 
 ## Step 5 - Set min destination batch limit
+
 normally it should be set to 3 as the maximum dapp accepts
 todo

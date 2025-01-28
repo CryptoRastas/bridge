@@ -1,6 +1,7 @@
 import './deploy-proxy-ONFT721'
 import './deploy-ERC721-mock'
 import './deploy-ONFT721'
+import './deploy-ONFT721-zk'
 import './set-trusted-remote-address'
 import './set-min-destination-gas'
 import './transfer-ERC721-to-destination-chain'
