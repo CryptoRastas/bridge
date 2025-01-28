@@ -72,7 +72,6 @@ and deploy ONFT721 on destination chain:
 | `--account-index`       | Account index to deploy from                 | `0`                       |
 | `--min-gas-to-transfer` | Min gas required to perform actions on chain | [check](config/chains.ts) |
 | `--lz-endpoint`         | L2 endpoint                                  | [check](config/chains.ts) |
-| `--zksync`              | Zksync Model                                 | false                     |
 
 ```bash
 pnpm hardhat deploy-ONFT721 --network 137 --name Cryptorastas --symbol RASTA
