@@ -7,14 +7,14 @@
 - Ethereum
 - Polygon
 - Base
-- Abstract (pending)
+- Abstract (not deployed)
 
 #### Testnet
 
-- Amoy
+- Amoy (not deployed)
 - Sepolia
 - Base Sepolia
-- Abstract Testnet
+- Abstract Testnet (not deployed)
 
 ## Getting Started
 
@@ -68,6 +68,7 @@ and deploy ONFT721 on destination chain:
 | `--account-index`       | Account index to deploy from                 | `0`                       |
 | `--min-gas-to-transfer` | Min gas required to perform actions on chain | [check](config/chains.ts) |
 | `--lz-endpoint`         | L2 endpoint                                  | [check](config/chains.ts) |
+| `--zksync`              | Zksync Model                                 | false                     |
 
 ```bash
 pnpm hardhat deploy-ONFT721 --network 137 --name Cryptorastas --symbol RASTA
@@ -150,5 +151,6 @@ pnpm verify --network [networkid] --contract contracts/[ContractName].sol:[Contr
 ```
 
 ## Step 5 - Set min destination batch limit
+
 normally it should be set to 3 as the maximum dapp accepts
 todo

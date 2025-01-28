@@ -5,6 +5,8 @@ export type AvailableChainContracts = 'lzEndpoint'
 export type Chain = IChain & {
   abstractId: number
   network: string
+  ethNetwork?: string
+  zksync?: boolean
   accounts: string[]
   contracts: {
     [k in AvailableChainContracts]: ChainContract
