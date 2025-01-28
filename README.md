@@ -1,5 +1,9 @@
 # CryptoRastas - NFT Bridge
 
+### Note
+
+For **Abstract** chain, there's still missing implementation of set min destination gas and set trusted remote scripts for zksync.
+
 ### Available chains
 
 #### Mainnet
