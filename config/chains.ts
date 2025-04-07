@@ -61,7 +61,6 @@ export const base: Chain = merge(baseChain, {
   minGasToTransferAndStoreLocal: 100_000n
 })
 
-//@dev: todo deploy
 export const abstract: Chain = merge(abstractChain, {
   abstractId: 324,
   zksync: true,
@@ -76,9 +75,6 @@ export const abstract: Chain = merge(abstractChain, {
   minGasToTransferAndStoreRemote: 1_000_000n,
   minGasToTransferAndStoreLocal: 100_000n
 })
-
-// pnpm hardhat deploy-ONFT721 --network 2741 --name Cryptorastas --symbol RASTA
-// npx hardhat compile --network 2741
 
 /**
  *
@@ -98,7 +94,6 @@ export const sepolia: Chain = merge(sepoliaChain, {
   minGasToTransferAndStoreLocal: 100_000n
 })
 
-/// @dev: todo deploy
 export const polygonAmoy: Chain = merge(polygonAmoyChain, {
   abstractId: 10267,
   network: 'matic-amoy',
@@ -125,7 +120,6 @@ export const baseSepolia: Chain = merge(baseSepoliaChain, {
   minGasToTransferAndStoreLocal: 100_000n
 })
 
-//@dev: todo deploy
 export const abstractTestnet: Chain = merge(abstractTestnetChain, {
   abstractId: 10313,
   network: 'abstract-testnet',
